@@ -156,7 +156,7 @@ public abstract class MultiLevelCache implements Cache {
 
 	protected abstract boolean doKeyExists(final String key);
 
-	public abstract class HighLevelCacheCallback {
+	private abstract class HighLevelCacheCallback {
 		public Object process(Cache highLevelCache) {
 			if (isHighLevelCacheEnable()) {
 				try {

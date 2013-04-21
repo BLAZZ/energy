@@ -40,7 +40,7 @@ public class VersionUpdateDefinition extends BaseCacheDefinition {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 		Map<String, Integer> paramIndexes = new HashMap<String, Integer>(8, 1f);
-		parseParameterAnnotations(annotations, paramTypes, paramIndexes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		configCacheKey(null, update.vkey(), paramTypes, paramIndexes);
 

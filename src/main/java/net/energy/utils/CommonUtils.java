@@ -10,6 +10,7 @@ import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ParsedExpression;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,7 +24,10 @@ public final class CommonUtils {
 	private static final Log LOGGER = LogFactory.getLog(CommonUtils.class);
 	public static final String SHELL_TOKEN = "#";
 	private static final String SQL_TOKEN = "?";
-
+	private static final String CLASS_FILE_SUFFIX = ".class";
+	
+	public static ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
+	
 	private CommonUtils() {
 	}
 
@@ -487,5 +491,27 @@ public final class CommonUtils {
 		}
 
 		return paramArrays;
+	}
+	
+	/**
+	 * 通过class获取对应的.class文件名。比如java.lang.String类会返回"String.class"
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static String getClassFileName(Class<?> clazz) {
+		Assert.notNull(clazz, "Class不能为空");
+		String className = clazz.getName();
+		int lastDotIndex = className.lastIndexOf(ClassUtils.PACKAGE_SEPARATOR);
+		return className.substring(lastDotIndex + 1) + CLASS_FILE_SUFFIX;
+	}
+	
+	/**
+	 * 设置系统参数名解析器，默认为{@link LocalVariableTableParameterNameDiscoverer}
+	 * 
+	 * @param parameterNameDiscoverer
+	 */
+	public static void setParameterNameDiscoverer(LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer) {
+		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer;
 	}
 }

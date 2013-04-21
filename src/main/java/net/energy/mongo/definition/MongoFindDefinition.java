@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.energy.annotation.Param;
 import net.energy.annotation.Unique;
 import net.energy.annotation.mongo.MongoCollection;
 import net.energy.annotation.mongo.MongoFind;
@@ -73,7 +72,7 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 			}
 		}
 
-		parseParameterAnnotations(annotations, paramIndexes, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		MongoFind findShell = method.getAnnotation(MongoFind.class);
 		String shell = findShell.value();
@@ -166,24 +165,17 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	 * 
 	 * @param annotations
 	 *            parameter上的annotation
-	 * @param paramIndexes
-	 *            每个@Param参数在parameter数组中的位置，如@Param("user")在parameter[0]上，那么
-	 *            paramIndexes.get("user")=0
 	 * @param paramTypes
 	 *            parameter的每个参数的类型
 	 * 
 	 */
-	protected void parseParameterAnnotations(Annotation[][] annotations, Map<String, Integer> paramIndexes,
-			Class<?>[] paramTypes) throws DaoGenerateException {
+	@Override
+	protected void parseExtentionParameterAnnotations(Annotation[][] annotations, Class<?>[] paramTypes)
+			throws DaoGenerateException {
 		for (int index = 0; index < annotations.length; index++) {
 
 			for (Annotation annotation : annotations[index]) {
 				Class<? extends Annotation> annotationType = annotation.annotationType();
-				if (Param.class.equals(annotationType)) {
-					Param param = (Param) annotation;
-					String value = param.value();
-					paramIndexes.put(value, index);
-				}
 				if (MongoCollection.class.equals(annotationType)) {
 					if (TypeUtils.isTypeString(paramTypes[index])) {
 						collectionIndex = index;

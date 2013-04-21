@@ -1,12 +1,10 @@
 package net.energy.cache.definition;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.energy.annotation.Param;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
@@ -15,6 +13,7 @@ import net.energy.expression.ParserFacotory.ExpressionType;
 import net.energy.utils.Assert;
 import net.energy.utils.CommonUtils;
 import net.energy.utils.Page;
+import net.energy.utils.ParameterParseable;
 import net.energy.utils.TypeUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,11 +25,7 @@ import org.apache.commons.lang.StringUtils;
  * @author wuqh
  * 
  */
-public class BaseCacheDefinition {
-	/**
-	 * 单个对象缓存versionKey需要用于指代结果对象的保留字
-	 */
-	private static String RESULT_PARAM_VALUE = "result";
+public class BaseCacheDefinition extends ParameterParseable {
 	/**
 	 * 解析后的key值对象
 	 */
@@ -108,40 +103,6 @@ public class BaseCacheDefinition {
 
 	public int getPageIndex() {
 		return pageIndex;
-	}
-
-	/**
-	 * 解析方法参数上配置的所有annotation，以及一些特殊的参数类型，例如{@link Page}
-	 * parameter上的annotation为一个二维数组，一个维度为参数个数，第二个对单个参数上的所有annotation
-	 * 即：annotations[0]，即为args[0]上的所有参数。
-	 * 
-	 * @param annotations
-	 *            parameter上的annotation
-	 * @param paramTypes
-	 *            parameter的每个参数的类型
-	 * @param paramIndexes
-	 *            每个@Param参数在parameter数组中的位置，如@Param("user")在parameter[0]上，那么
-	 *            paramIndexes.get("user")=0
-	 */
-	protected void parseParameterAnnotations(Annotation[][] annotations, Class<?>[] paramTypes,
-			Map<String, Integer> paramIndexes) {
-
-		for (int index = 0; index < annotations.length; index++) {
-			if (TypeUtils.isTypePage(paramTypes[index])) {
-				pageIndex = index;
-			}
-
-			for (Annotation annotation : annotations[index]) {
-				Class<? extends Annotation> annotationType = annotation.annotationType();
-				if (Param.class.equals(annotationType)) {
-					Param param = (Param) annotation;
-					String value = param.value();
-					paramIndexes.put(value, index);
-				}
-			}
-
-		}
-
 	}
 
 	/**

@@ -30,7 +30,7 @@ public class MongoInsertDefinition extends BaseMongoDefinition {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		MongoInsert insertShell = method.getAnnotation(MongoInsert.class);
 		String shell = insertShell.value();

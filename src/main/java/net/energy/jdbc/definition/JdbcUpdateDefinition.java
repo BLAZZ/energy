@@ -37,7 +37,7 @@ public class JdbcUpdateDefinition extends BaseJdbcDefinition {
 		Map<String, Integer> paramIndexes = new HashMap<String, Integer>(8, 1f);
 		Annotation[][] annotations = method.getParameterAnnotations();
 		Class<?>[] paramTypes = method.getParameterTypes();
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		// 解析SQL语句
 		Update update = method.getAnnotation(Update.class);

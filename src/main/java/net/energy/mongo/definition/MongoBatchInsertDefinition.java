@@ -33,7 +33,7 @@ public class MongoBatchInsertDefinition extends BaseMongoDefinition implements B
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 
-		parseParameterAnnotations(annotations, paramIndexes, batchParamIndexes, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, batchParamIndexes, paramTypes);
 
 		MongoBatchInsert insertShell = method.getAnnotation(MongoBatchInsert.class);
 		String shell = insertShell.value();

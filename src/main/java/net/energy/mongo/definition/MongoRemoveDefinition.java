@@ -30,7 +30,7 @@ public class MongoRemoveDefinition extends BaseMongoDefinition {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		MongoRemove rmShell = method.getAnnotation(MongoRemove.class);
 		String shell = rmShell.value();

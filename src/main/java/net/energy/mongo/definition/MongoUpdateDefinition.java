@@ -43,7 +43,7 @@ public class MongoUpdateDefinition extends BaseMongoDefinition {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		MongoUpdate updateShell = method.getAnnotation(MongoUpdate.class);
 		String queryShell = updateShell.query();

@@ -33,7 +33,7 @@ public class MongoCountDefinition extends BaseMongoDefinition {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
 
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		MongoCount countShell = method.getAnnotation(MongoCount.class);
 		String shell = countShell.value();

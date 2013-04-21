@@ -50,7 +50,7 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 		Map<String, Integer> batchParamIndexes = new HashMap<String, Integer>(8, 1f);
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
-		parseParameterAnnotations(annotations, paramIndexes, batchParamIndexes, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, batchParamIndexes, paramTypes);
 
 		// 解析批量修改的SQL语句
 		BatchUpdate update = method.getAnnotation(BatchUpdate.class);

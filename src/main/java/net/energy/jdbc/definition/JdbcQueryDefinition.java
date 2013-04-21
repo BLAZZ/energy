@@ -44,6 +44,7 @@ public class JdbcQueryDefinition extends BaseJdbcDefinition {
 
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Annotation[][] annotations = method.getParameterAnnotations();
+		
 		for (int index = 0; index < annotations.length; index++) {
 			if (TypeUtils.isTypePage(paramTypes[index])) {
 				pageIndex = index;
@@ -51,7 +52,7 @@ public class JdbcQueryDefinition extends BaseJdbcDefinition {
 			}
 		}
 
-		parseParameterAnnotations(annotations, paramIndexes, null, paramTypes);
+		parseParameterAnnotations(method, annotations, paramIndexes, null, paramTypes);
 
 		String sql = query.value();
 		parseSql(sql, paramTypes, paramIndexes);

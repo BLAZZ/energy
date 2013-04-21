@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import net.energy.annotation.BatchParam;
-import net.energy.annotation.Param;
 import net.energy.annotation.mongo.MongoCollection;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
@@ -14,9 +12,9 @@ import net.energy.expression.ParsedExpression;
 import net.energy.expression.ParserFacotory;
 import net.energy.expression.ParserFacotory.ExpressionType;
 import net.energy.utils.CommonUtils;
+import net.energy.utils.ParameterParseable;
 import net.energy.utils.TypeUtils;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -27,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
  * @author wuqh
  * 
  */
-public class BaseMongoDefinition {
+public class BaseMongoDefinition extends ParameterParseable {
 	/**
 	 * 解析后的Shell值对象
 	 */
@@ -40,35 +38,6 @@ public class BaseMongoDefinition {
 	 * 用于从方法参数的Bean对象中获取需要变量值的getter方法。缓存起来用于减少反射的查询操作
 	 */
 	protected Method[] getterMethods;
-	/**
-	 * parsedShell的parameterNames中每个name对应对象在方法args[]数组中的索引值。
-	 * 由于parameterNames包含"."，所以需要parameterIndexes记录"."之前的@Param、@BatchParam对应的位置
-	 * 
-	 * <pre>
-	 * 例如：
-	 * <code>@MongoBatchInsert("{id::user.id,nickname::user.nickname,date::user.date}")
-	 * public void insertUsers(@BatchParam("user") User[] user, @MongoCollection() String collection);</code>
-	 * 将解析出parsedSql.parameterNames=["user.id","user.nickname","user.date"]，但对应的parameterIndexes就会是[0,0,0]
-	 * 
-	 * 注意：@BatchParam对应的index也会当做@Param处理。
-	 * 因为，args[]=[[{id:1L,nickname:'123',date:...},{id:2L,nickname:'1234',date:...}]]这样的参数在调用时会转换为[[{id:1L,nickname:'123',date:...}],[{id:2L,nickname:'1234',date:...}]]给Shell操作调用。
-	 * 所以，对于@BatchParam中的每一个值，在实际调用过程中都相当于每次都是一个@Param
-	 * </pre>
-	 * 
-	 */
-	protected Integer[] parameterIndexes;
-	/**
-	 * 由于批量执行过程中，需要逐一替换参数中对映位置的值，所以需要记录每一个@BatchParam在args中的index
-	 * 
-	 * <pre>
-	 * 例如：
-	 * <code>@MongoBatchInsert("{id::user.id,nickname::user.nickname,date::user.date}")
-	 * public void insertUsers(@BatchParam("user") User[] user, @MongoCollection() String collection);</code>
-	 * 对应的batchParamIndexes就会是[0]
-	 * </pre>
-	 * 
-	 */
-	private Integer[] batchParamIndexes;
 
 	/**
 	 * <code>@MongoCollection</code>参数放在args的位置
@@ -96,6 +65,8 @@ public class BaseMongoDefinition {
 	 * parameter上的annotation为一个二维数组，一个维度为参数个数，第二个对单个参数上的所有annotation
 	 * 即：annotations[0]，即为args[0]上的所有参数。
 	 * 
+	 * @param method
+	 * 
 	 * @param annotations
 	 *            parameter上的annotation
 	 * @param paramIndexes
@@ -108,28 +79,21 @@ public class BaseMongoDefinition {
 	 *            parameter的每个参数的类型
 	 * 
 	 */
-	protected void parseParameterAnnotations(Annotation[][] annotations, Map<String, Integer> paramIndexes,
-			Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes) throws DaoGenerateException {
+	@Override
+	protected void parseParameterAnnotations(Method method, Annotation[][] annotations,
+			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes)
+			throws DaoGenerateException {
+		super.parseParameterAnnotations(method, annotations, paramIndexes, batchParamIndexMap, paramTypes);
+		
+		parseExtentionParameterAnnotations(annotations, paramTypes);
+		
+	}
+	
+	protected void parseExtentionParameterAnnotations(Annotation[][] annotations, Class<?>[] paramTypes) throws DaoGenerateException {
 		for (int index = 0; index < annotations.length; index++) {
 
 			for (Annotation annotation : annotations[index]) {
 				Class<? extends Annotation> annotationType = annotation.annotationType();
-				if (Param.class.equals(annotationType)) {
-					Param param = (Param) annotation;
-					String value = param.value();
-					paramIndexes.put(value, index);
-				}
-				if (BatchParam.class.equals(annotationType) && batchParamIndexMap != null) {
-					BatchParam param = (BatchParam) annotation;
-					String value = param.value();
-					batchParamIndexMap.put(value, index);
-					batchParamIndexes = (Integer[]) ArrayUtils.add(batchParamIndexes, new Integer(index));
-
-					if (paramTypes[index] == null || !paramTypes[index].isArray()) {
-						throw new DaoGenerateException("@BatchParam can only on an array");
-					}
-
-				}
 				if (MongoCollection.class.equals(annotationType)) {
 					if (TypeUtils.isTypeString(paramTypes[index])) {
 						collectionIndex = index;
@@ -229,10 +193,6 @@ public class BaseMongoDefinition {
 		return getterMethods;
 	}
 
-	public Integer[] getParameterIndexes() {
-		return parameterIndexes;
-	}
-
 	public ParsedExpression getParsedShell() {
 		return parsedShell;
 	}
@@ -241,7 +201,4 @@ public class BaseMongoDefinition {
 		return pageIndex;
 	}
 
-	public Integer[] getBatchParamIndexes() {
-		return batchParamIndexes;
-	}
 }
