@@ -11,22 +11,21 @@ public class CacheUnreachableException extends RuntimeException {
 
 	public CacheUnreachableException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CacheUnreachableException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CacheUnreachableException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CacheUnreachableException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

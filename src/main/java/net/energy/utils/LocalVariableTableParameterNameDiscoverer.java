@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,18 +31,17 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 
 	private static Log LOGGER = LogFactory.getLog(LocalVariableTableParameterNameDiscoverer.class);
 
-	// marker object for classes that do not have any debug info
+	// 用于标记没有DEBUG信息（DEBUG和CODE信息）的类文件
 	private static final Map<Member, String[]> NO_DEBUG_INFO_MAP = Collections.emptyMap();
 
-	// the cache uses a nested index (value is a map) to keep the top level
-	// cache relatively small in size
+	// 方法名缓存，缓存采用class级别缓存，里面包含方法和对应参数的映射
 	private final Map<Class<?>, Map<Member, String[]>> parameterNamesCache = new ConcurrentHashMap<Class<?>, Map<Member, String[]>>();
 
 	public String[] getParameterNames(Method method) {
 		Class<?> declaringClass = method.getDeclaringClass();
 		Map<Member, String[]> map = this.parameterNamesCache.get(declaringClass);
 		if (map == null) {
-			// initialize cache
+			// 初始化Cache
 			map = inspectClass(declaringClass);
 			this.parameterNamesCache.put(declaringClass, map);
 		}
@@ -57,7 +55,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		Class<?> declaringClass = constructor.getDeclaringClass();
 		Map<Member, String[]> map = this.parameterNamesCache.get(declaringClass);
 		if (map == null) {
-			// initialize cache
+			// 初始化Cache
 			map = inspectClass(declaringClass);
 			this.parameterNamesCache.put(declaringClass, map);
 		}
@@ -69,30 +67,27 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	}
 
 	/**
-	 * Inspects the target class. Exceptions will be logged and a maker map
-	 * returned to indicate the lack of debug information.
+	 * 检查Class. 读取".class"文件，并解析方法以及对应的参数名数组，如果不包含DEBUG信息则返回空的Map
+	 * 
+	 * @param clazz
 	 */
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
-		InputStream is = clazz.getResourceAsStream(CommonUtils.getClassFileName(clazz));
+		InputStream is = clazz.getResourceAsStream(EnergyClassUtils.getClassFileName(clazz));
 		if (is == null) {
-			// We couldn't load the class file, which is not fatal as it
-			// simply means this method of discovering parameter names won't
-			// work.
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Cannot find '.class' file for class [" + clazz
-						+ "] - unable to determine constructors/methods parameter names");
+				LOGGER.debug("无法找到[" + clazz + "]的'.class'文件 ，所以无法获取构造方法/方法中的参数名");
 			}
 			return NO_DEBUG_INFO_MAP;
 		}
 		try {
 			ClassReader classReader = new ClassReader(is);
 			Map<Member, String[]> map = new ConcurrentHashMap<Member, String[]>();
+			// 需要使用大于SKIP_DEBUG和SKIP_CODE的级别，用于获取DEBUG信息
 			classReader.accept(new ParameterNameDiscoveringVisitor(clazz, map), ClassReader.SKIP_FRAMES);
 			return map;
 		} catch (IOException ex) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Exception thrown while reading '.class' file for class [" + clazz
-						+ "] - unable to determine constructors/methods parameter names", ex);
+				LOGGER.debug("读取[" + clazz + "]的'.class'文件 发生异常，所以无法获取构造方法/方法中的参数名", ex);
 			}
 		} finally {
 			try {
@@ -105,8 +100,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	}
 
 	/**
-	 * Helper class that inspects all methods (constructor included) and then
-	 * attempts to find the parameter names for that member.
+	 * 参数名获取器，用于访问所有方法（包括构造方法）来获取方法的参数名
 	 */
 	private static class ParameterNameDiscoveringVisitor extends EmptyVisitor {
 
@@ -122,7 +116,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 
 		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-			// exclude synthetic + bridged && static class initialization
+			// 过滤synthetic（非用户代码产生）、 bridged、static类的构造方法
 			if (!isSyntheticOrBridged(access) && !STATIC_CLASS_INIT.equals(name)) {
 				return new LocalVariableTableVisitor(clazz, memberMap, name, desc, isStatic(access));
 			}
@@ -138,6 +132,11 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		}
 	}
 
+	/**
+	 * LVT（Local Variable Table）访问器，用于访问方法的LVT
+	 * 
+	 *
+	 */
 	private static class LocalVariableTableVisitor extends EmptyVisitor {
 
 		private static final String CONSTRUCTOR = "<init>";
@@ -152,8 +151,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		private boolean hasLvtInfo = false;
 
 		/*
-		 * The nth entry contains the slot index of the LVT table entry holding
-		 * the argument name for the nth parameter.
+		 * 第N个方法参数的slot索引，lvtSlotIndex[0]表示第一个参数的slot索引
 		 */
 		private final int[] lvtSlotIndex;
 
@@ -183,12 +181,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		@Override
 		public void visitEnd() {
 			if (this.hasLvtInfo || (this.isStatic && this.parameterNames.length == 0)) {
-				// visitLocalVariable will never be called for static no args
-				// methods
-				// which doesn't use any local variables.
-				// This means that hasLvtInfo could be false for that kind of
-				// methods
-				// even if the class has local variable info.
+				//由于静态的无参数方法不需要本地变量，所以不会有hasLvtInfo，需要特殊处理
 				memberMap.put(resolveMember(), parameterNames);
 			}
 		}
@@ -197,14 +190,14 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 			ClassLoader loader = clazz.getClassLoader();
 			Class<?>[] classes = new Class<?>[args.length];
 
-			// resolve args
+			// 解析参数
 			for (int i = 0; i < args.length; i++) {
 				String className = null;
 				try {
 					className = args[i].getClassName();
-					classes[i] = ClassUtils.getClass(loader, className);
+					classes[i] = EnergyClassUtils.getClass(loader, className);
 				} catch (ClassNotFoundException e) {
-					throw new IllegalArgumentException("Cannot find class [" + className + "]", e);
+					throw new IllegalArgumentException("找不到类[" + className + "]", e);
 				}
 			}
 			try {
@@ -214,14 +207,14 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 
 				return clazz.getDeclaredMethod(name, classes);
 			} catch (NoSuchMethodException ex) {
-				throw new IllegalStateException("Method [" + name
-						+ "] was discovered in the .class file but cannot be resolved in the class object", ex);
+				throw new IllegalStateException(".class文件中的方法 [" + name + "]无法在类对象中找到", ex);
 			}
 		}
 
 		private static int[] computeLvtSlotIndices(boolean isStatic, Type[] paramTypes) {
 			int[] lvtIndex = new int[paramTypes.length];
 			int nextIndex = (isStatic ? 0 : 1);
+			// 非静态方法的第一个参数是this
 			for (int i = 0; i < paramTypes.length; i++) {
 				lvtIndex[i] = nextIndex;
 				if (isWideType(paramTypes[i])) {
@@ -234,7 +227,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		}
 
 		private static boolean isWideType(Type aType) {
-			// float is not a wide type
+			// 是否为宽类型（Long和Double），宽类型占两个slot
 			return (aType == Type.LONG_TYPE || aType == Type.DOUBLE_TYPE);
 		}
 	}

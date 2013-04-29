@@ -47,7 +47,7 @@ class UpdateCallback implements PreparedStatementCallback<Integer> {
 				}
 			}
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("SQL update affected " + rows + " rows and returned " + generatedKeys.size() + " keys");
+				LOGGER.debug("SQL更新操作更新了[" + rows + "]条记录，返回了[" + generatedKeys.size() + "]条主键");
 			}
 		}
 

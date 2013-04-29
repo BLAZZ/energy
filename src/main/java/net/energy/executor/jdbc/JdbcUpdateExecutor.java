@@ -3,11 +3,11 @@ package net.energy.executor.jdbc;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.jdbc.JdbcUpdateDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.jdbc.JdbcDataAccessor;
 import net.energy.jdbc.KeyHolder;
-import net.energy.jdbc.definition.JdbcUpdateDefinition;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,14 +34,14 @@ public class JdbcUpdateExecutor extends AbstractJdbcExecutor {
 		// 获取实际用于执行的preparedSQL
 		String actualSql = definition.getActualSql(args);
 		List<String> parameterNames = definition.getParsedSql().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 
 		KeyHolder keyHolder = null;
 		if (isReturnId) {
 			keyHolder = dataAccessor.getKeyHolder();
 		}
 
-		LOGGER.info("Normal Update SQL:" + actualSql);
+		LOGGER.info("更新操作执行SQL[" + actualSql + "]");
 		int rows = dataAccessor.update(actualSql, keyHolder, paramArray);
 
 		if (keyHolder != null) {
@@ -55,5 +55,7 @@ public class JdbcUpdateExecutor extends AbstractJdbcExecutor {
 	protected void initDefinition(Method method) throws DaoGenerateException {
 		definition = new JdbcUpdateDefinition(method);
 	}
+
+	
 
 }

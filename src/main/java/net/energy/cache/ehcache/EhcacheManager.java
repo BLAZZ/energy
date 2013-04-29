@@ -7,6 +7,7 @@ import net.energy.cache.CacheManager;
 import net.energy.cache.MultiLevelCache;
 import net.energy.cache.MultiLevelCacheManager;
 import net.energy.exception.CacheUnreachableException;
+import net.energy.utils.EnergyClassUtils;
 import net.sf.ehcache.bootstrap.BootstrapCacheLoader;
 import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
@@ -76,7 +77,7 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 		try {
 			cache = doGetCache(pool.toUpperCase());
 		} catch (Exception e) {
-			throw new CacheUnreachableException("Can't create Ehcache Instance");
+			throw new CacheUnreachableException("创建Ehcache实例失败");
 		}
 		Ehcache ehcache = new Ehcache();
 		ehcache.setCache(cache);
@@ -87,12 +88,12 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 		net.sf.ehcache.Cache rawCache;
 		if (this.cacheManager.cacheExists(cacheName)) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Using existing EHCache cache region '" + cacheName + "'");
+				LOGGER.debug("使用已有EHCache缓存[" + cacheName + "]");
 			}
 			rawCache = this.cacheManager.getCache(cacheName);
 		} else {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Creating new EHCache cache region '" + cacheName + "'");
+				LOGGER.debug("创建EHCache缓存[" + cacheName + "]");
 			}
 			rawCache = createCache(cacheName);
 			this.cacheManager.addCache(rawCache);
@@ -122,14 +123,14 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 
 		if (this.cacheManager == null) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Using default EHCache CacheManager");
+				LOGGER.debug("使用默认的EHCache CacheManager");
 			}
 			InputStream is = null;
 			if (StringUtils.isNotEmpty(configLocation)) {
 				configLocation = StringUtils.replaceOnce(configLocation, CLASSPATH_PREFIX, "");
-				is = EhcacheManager.class.getClassLoader().getResourceAsStream(configLocation);
+				is = EnergyClassUtils.getClassLoader().getResourceAsStream(configLocation);
 				if (is == null) {
-					LOGGER.info("Cannot Find File:" + configLocation + "in ClassPath, it will use default config");
+					LOGGER.info("没有在ClassPath中找到文件[" + configLocation + "]，系统将使用默认的EHCache配置");
 				}
 			}
 			try {

@@ -40,6 +40,6 @@ public class CacheObject implements Serializable {
 		if (cacheObject != null) {
 			cacheObjectStr = cacheObject.toString();
 		}
-		return "[缓存对象:" + cacheObjectStr + ",缓存版本:" + version + "]";
+		return "实际缓存对象[" + cacheObjectStr + "]，版本[" + version + "]";
 	}
 }

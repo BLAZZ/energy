@@ -54,11 +54,11 @@ public class TaskRepository {
 		TaskResult<T> result = null;
 
 		if (isFirst) {
-			System.out.println("Thread" + Thread.currentThread().getId() + ":isFirst and go process");
+			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程是任务队列的第一个任务，将会被执行");
 			result = task.process(taskParameters);
 			List<TaskDoneListener> currentListeners = getTaskDoneListeners(taskParameters);
 
-			Assert.notEmpty(currentListeners, "quene cause an error, because queue to notify is null");
+			Assert.notEmpty(currentListeners, "获取任务队列失败，无法将任务完成的消息通知到队列中的其他任务");
 
 			synchronized (currentListeners) {
 				for (TaskDoneListener listener : currentListeners) {
@@ -68,7 +68,7 @@ public class TaskRepository {
 			}
 
 		} else {
-			System.out.println("Thread" + Thread.currentThread().getId() + ":isNotFirst and go wait");
+			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程不是任务队列的第一个任务，开始等待一个任务处理结果");
 			try {
 				synchronized (task) {
 					if (timeout > 0) {
@@ -78,13 +78,13 @@ public class TaskRepository {
 					}
 				}
 			} catch (InterruptedException e) {
-				LOGGER.debug("Occured An InterruptedException when waiting", e);
+				LOGGER.debug("等待时遇到InterruptedException", e);
 			}
 		}
 
 		TaskResult<T> finalResult = task.getTaskResult();
 		if (finalResult == null || !finalResult.isDone()) {
-			throw new TaskNotReturnException("Task:" + task.toString() + " ended without an result");
+			throw new TaskNotReturnException("任务[" + task.toString() + "]结束但没有返回任何结果");
 		}
 
 		return finalResult.getResult();
@@ -113,7 +113,7 @@ public class TaskRepository {
 	 * @param taskParameters
 	 */
 	private static void clearListeners(TaskParameters taskParameters) {
-		System.out.println("Thread" + Thread.currentThread().getId() + ":clears Listeners");
+		LOGGER.debug("Thread" + Thread.currentThread().getId() + ":清空任务队列");
 		tasks.remove(taskParameters);
 	}
 
@@ -127,7 +127,7 @@ public class TaskRepository {
 	private static boolean isFirstTask(Task task, TaskParameters taskParameters) {
 		List<TaskDoneListener> listeners = getTaskDoneListeners(taskParameters);
 
-		Assert.notEmpty(listeners, "Can't judge is first of a empty listener list");
+		Assert.notEmpty(listeners, "listener为空，无法判断是否为队列的第一个任务");
 
 		TaskDoneListener listener = listeners.get(0);
 
@@ -144,30 +144,30 @@ public class TaskRepository {
 		return tasks.get(taskParameters);
 	}
 
-	public static class P implements TaskParameters {
-		private final int j;
-
-		public P(int j) {
-			this.j = (j % 10);
-		}
-
-		public int getJ() {
-			return j;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			P p = (P) obj;
-			return (p != null && p.getJ() == j);
-		}
-
-		@Override
-		public int hashCode() {
-			return new Integer(j).hashCode();
-		}
-
-	}
-
+	// public static class P implements TaskParameters {
+	// private final int j;
+	//
+	// public P(int j) {
+	// this.j = (j % 10);
+	// }
+	//
+	// public int getJ() {
+	// return j;
+	// }
+	//
+	// @Override
+	// public boolean equals(Object obj) {
+	// P p = (P) obj;
+	// return (p != null && p.getJ() == j);
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// return new Integer(j).hashCode();
+	// }
+	//
+	// }
+	//
 	// public static class T implements Task {
 	// private TaskResult result;
 	//

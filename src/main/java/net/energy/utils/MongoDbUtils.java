@@ -40,9 +40,9 @@ public class MongoDbUtils {
 	 * @return
 	 */
 	public static DB getDB(Mongo mongo, String databaseName, String username, char[] password) {
-		Assert.notNull(mongo, "No Mongo instance specified");
+		Assert.notNull(mongo, "必须指定Mongo实例");
 
-		LOGGER.trace("Getting Mongo Database name=[" + databaseName + "]");
+		LOGGER.trace("开始连接MongoDB[" + databaseName + "]");
 		DB db = mongo.getDB(databaseName);
 
 		boolean credentialsGiven = username != null && password != null;
@@ -50,8 +50,8 @@ public class MongoDbUtils {
 			// Note, can only authenticate once against the same com.mongodb.DB
 			// object.
 			if (!db.authenticate(username, password)) {
-				throw new DataAccessException("Failed to authenticate to database [" + databaseName + "], username = ["
-						+ username + "], password = [" + new String(password) + "]");
+				throw new DataAccessException("认证失败！认证DB[" + databaseName + "],用户名["
+						+ username + "],密码[" + new String(password) + "]");
 			}
 		}
 
@@ -65,11 +65,11 @@ public class MongoDbUtils {
 	 */
 	public static void closeDB(DB db) {
 		if (db != null) {
-			LOGGER.debug("Closing Mongo DB object");
+			LOGGER.trace("正在关闭MongoDB[" + db.getName() + "]");
 			try {
 				db.requestDone();
 			} catch (Throwable ex) {
-				LOGGER.debug("Unexpected exception on closing Mongo DB object", ex);
+				LOGGER.debug("关闭MongoDB时发生未知异常", ex);
 			}
 		}
 	}

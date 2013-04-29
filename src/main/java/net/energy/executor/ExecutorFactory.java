@@ -1,8 +1,6 @@
 package net.energy.executor;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.energy.annotation.jdbc.BatchUpdate;
 import net.energy.annotation.jdbc.Query;
@@ -38,10 +36,6 @@ import net.energy.mongo.MongoDataAccessor;
  * @see DataAccessExecutor
  */
 public final class ExecutorFactory {
-	private static final int CACHE_INIT_SIZE = 256;
-	private static final Map<Method, DataAccessExecutor> EXECUTOR_CACHE = new HashMap<Method, DataAccessExecutor>(
-			CACHE_INIT_SIZE);
-
 	private ExecutorFactory() {
 	}
 
@@ -54,24 +48,20 @@ public final class ExecutorFactory {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static DataAccessExecutor getJdbcExecutor(CacheManager cacheManager, JdbcDataAccessor dataAccessor,
+	public static DataAccessExecutor createJdbcExecutor(CacheManager cacheManager, JdbcDataAccessor dataAccessor,
 			Method method) throws DaoGenerateException {
-		DataAccessExecutor executor = EXECUTOR_CACHE.get(method);
+		DataAccessExecutor executor = null;
 
-		if (executor == null) {
-			CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
-			AbstractJdbcExecutor jdbcExecutor = createJdbcExecutor(dataAccessor, method);
+		CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
+		AbstractJdbcExecutor jdbcExecutor = createJdbcExecutor(dataAccessor, method);
 
-			if (jdbcExecutor == null) {
-				cacheExecutor.setDataAccessExecutor(new MethodExecutor(method));
-			} else {
-				cacheExecutor.setDataAccessExecutor(jdbcExecutor);
-			}
-
-			executor = cacheExecutor;
-
-			EXECUTOR_CACHE.put(method, executor);
+		if (jdbcExecutor == null) {
+			cacheExecutor.setDataAccessExecutor(new MethodExecutor(method));
+		} else {
+			cacheExecutor.setDataAccessExecutor(jdbcExecutor);
 		}
+
+		executor = cacheExecutor;
 
 		return executor;
 
@@ -86,24 +76,19 @@ public final class ExecutorFactory {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static DataAccessExecutor getMongoExecutor(CacheManager cacheManager, MongoDataAccessor dataAccessor,
+	public static DataAccessExecutor createMongoExecutor(CacheManager cacheManager, MongoDataAccessor dataAccessor,
 			Method method) throws DaoGenerateException {
-		DataAccessExecutor executor = EXECUTOR_CACHE.get(method);
+		DataAccessExecutor executor = null;
+		CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
+		AbstractMongoExecutor mongoExecutor = createMongoExecutor(dataAccessor, method);
 
-		if (executor == null) {
-			CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
-			AbstractMongoExecutor mongoExecutor = createMongoExecutor(dataAccessor, method);
-
-			if (mongoExecutor == null) {
-				cacheExecutor.setDataAccessExecutor(new MethodExecutor(method));
-			} else {
-				cacheExecutor.setDataAccessExecutor(mongoExecutor);
-			}
-
-			executor = cacheExecutor;
-
-			EXECUTOR_CACHE.put(method, executor);
+		if (mongoExecutor == null) {
+			cacheExecutor.setDataAccessExecutor(new MethodExecutor(method));
+		} else {
+			cacheExecutor.setDataAccessExecutor(mongoExecutor);
 		}
+
+		executor = cacheExecutor;
 
 		return executor;
 

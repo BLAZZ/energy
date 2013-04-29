@@ -14,7 +14,8 @@ public interface DaoFactory {
 	 *            DAO的接口类
 	 * @param clazz
 	 * @return
+	 * @throws Exception
 	 */
-	<T> T createDao(Class<T> clazz);
+	<T> T createDao(Class<T> clazz) throws Exception ;
 
 }

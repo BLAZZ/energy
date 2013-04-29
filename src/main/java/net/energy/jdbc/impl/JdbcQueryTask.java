@@ -15,7 +15,7 @@ public class JdbcQueryTask extends Task {
 	private final SimpleJdbcDataAccessor dataAccessor;
 	
 	public JdbcQueryTask(SimpleJdbcDataAccessor dataAccessor) {
-		Assert.isNull(dataAccessor, "DataAccessorObject can't be null");
+		Assert.isNull(dataAccessor, "DataAccessor实例不能为空");
 		this.dataAccessor = dataAccessor;
 	}
 	

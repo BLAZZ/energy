@@ -24,7 +24,7 @@ public class MySqlDialect implements Dialect {
 	}
 
 	protected String escapeLastSemicolon(String sql) {
-		Assert.notNull(sql, "SQL must not null");
+		Assert.notNull(sql, "SQL不能为空");
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);
 		}

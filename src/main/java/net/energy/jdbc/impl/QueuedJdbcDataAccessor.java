@@ -44,13 +44,11 @@ public class QueuedJdbcDataAccessor extends SimpleJdbcDataAccessor implements Jd
 
 	@Override
 	public void setDataSource(DataSource dataSource) {
-		// TODO Auto-generated method stub
 		dataAccessor.setDataSource(dataSource);
 	}
 
 	@Override
 	public void setDialect(Dialect dialect) {
-		// TODO Auto-generated method stub
 		dataAccessor.setDialect(dialect);
 	}
 

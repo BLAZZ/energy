@@ -1,18 +1,15 @@
-package net.energy.jdbc.definition;
+package net.energy.definition.jdbc;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import net.energy.annotation.ReturnId;
 import net.energy.annotation.jdbc.BatchUpdate;
+import net.energy.definition.BatchDefinition;
 import net.energy.exception.DaoGenerateException;
-import net.energy.expression.ParsedExpression;
-import net.energy.utils.BatchDefinition;
-import net.energy.utils.TypeUtils;
-
-import org.apache.commons.lang.ClassUtils;
+import net.energy.utils.EnergyClassUtils;
 
 /**
  * 通过对配置了@BatchUpdate的方法的解析，产生需要在执行JDBC操作时必要用到的参数。
@@ -21,6 +18,7 @@ import org.apache.commons.lang.ClassUtils;
  * 
  */
 public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements BatchDefinition {
+	private static final Log LOGGER = LogFactory.getLog(JdbcBatchUpdateDefinition.class);
 	private boolean isReturnId = false;
 	private boolean isReturnList = false;
 	private Class<?> returnComponentType;
@@ -38,25 +36,19 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 	}
 
 	public JdbcBatchUpdateDefinition(Method method) throws DaoGenerateException {
-		init(method);
+		super(method);
 	}
 
-	private void init(Method method) throws DaoGenerateException {
-		// 检查返回值类型
-		checkReturnType(method);
-
-		// 解析Parameter上的Annotation
-		Map<String, Integer> paramIndexes = new HashMap<String, Integer>(8, 1f);
-		Map<String, Integer> batchParamIndexes = new HashMap<String, Integer>(8, 1f);
-		Class<?>[] paramTypes = method.getParameterTypes();
-		Annotation[][] annotations = method.getParameterAnnotations();
-		parseParameterAnnotations(method, annotations, paramIndexes, batchParamIndexes, paramTypes);
-
+	protected String getSourceSql(Method method) {
 		// 解析批量修改的SQL语句
 		BatchUpdate update = method.getAnnotation(BatchUpdate.class);
-		parseSql(update.value(), paramTypes, paramIndexes, batchParamIndexes);
+		return update.value();
+	}
 
-		// parseShardBy(method, paramIndexes, paramTypes);
+	@Override
+	protected void checkBeforeParse(Method method) throws DaoGenerateException {
+		super.checkBeforeParse(method);
+		checkReturnType(method);
 	}
 
 	/**
@@ -71,15 +63,15 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 
 		Class<?> returnType = method.getReturnType();
 		if (isReturnId && returnType != null) {
-			if (TypeUtils.isTypeList(returnType)) {
+			if (EnergyClassUtils.isTypeList(returnType)) {
 				isReturnList = true;
-			} else if (!TypeUtils.isTypeArray(returnType)) {
-				throw new DaoGenerateException("@ReturnId must on a method return List<? extends Number> or an array");
+			} else if (!EnergyClassUtils.isTypeArray(returnType)) {
+				throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@ReturnId注解的方法只能返回数组或者List<? extends Number>类型对象");
 			} else {
 				returnComponentType = returnType.getComponentType();
-				if (!ClassUtils.isAssignable(returnComponentType, Number.class, true)) {
+				if (!EnergyClassUtils.isAssignable(returnComponentType, Number.class, true)) {
 					throw new DaoGenerateException(
-							"@ReturnId return an array that only can be primitive or assignable to Number");
+							"方法[" + method + "]配置错误：返回类型只能是基本类型数组或者java.lang.Number类型数组");
 				}
 
 				isReturnList = false;
@@ -88,12 +80,25 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 			if (void.class.equals(returnType) || int.class.equals(returnType.getComponentType())) {
 				return;
 			}
-			throw new DaoGenerateException("@BatchUpdate must on a method return void or int[]");
+			throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@BatchUpdate注解的方法只能返回int[]；或者请增加@ReturnId注解");
 		}
 	}
-
+	
 	@Override
-	public ParsedExpression getParsedExpression() {
-		return getParsedSql();
+	protected void logBindInfo(Method method) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("绑定" + getDescription() + "到方法[" + method + "]成功");
+		}
 	}
+	
+	private String getDescription() {
+		String desc = "@BatchUpdate(" + this.getParsedSql().getOriginalExpression() + ")";
+
+		if(this.isReturnId()) {
+			desc = desc + ",@ReturnId()";
+		}
+		
+		return desc;
+	}
+
 }

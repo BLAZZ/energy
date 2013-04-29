@@ -11,22 +11,22 @@ public class DaoGenerateException extends Exception {
 
 	public DaoGenerateException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public DaoGenerateException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public DaoGenerateException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public DaoGenerateException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }

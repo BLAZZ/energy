@@ -11,22 +11,22 @@ public class MongoDataAccessException extends DataAccessException {
 
 	public MongoDataAccessException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MongoDataAccessException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MongoDataAccessException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MongoDataAccessException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }

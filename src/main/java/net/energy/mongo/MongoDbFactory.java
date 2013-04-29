@@ -52,15 +52,15 @@ public class MongoDbFactory {
 	private void initMongo() {
 		if(initialized) {
 			if(mongo == null) {//init mongo errror
-				throw new DataAccessException("Cannot init mongo");
+				throw new DataAccessException("创建mongo实例失败");
 			}
 		} else {
 			try {
 				mongo = new Mongo(host, port);
 			} catch (UnknownHostException e) {
-				LOGGER.error("Cannot init mongo", e);
+				LOGGER.error("创建mongo实例失败：", e);
 			} catch (MongoException e) {
-				LOGGER.error("Cannot init mongo", e);
+				LOGGER.error("创建mongo实例失败：", e);
 			} finally {
 				initialized = true;
 			}

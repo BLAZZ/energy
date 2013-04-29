@@ -11,22 +11,22 @@ public class IllegalMongoShellException extends DataAccessException {
 
 	public IllegalMongoShellException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public IllegalMongoShellException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public IllegalMongoShellException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public IllegalMongoShellException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }

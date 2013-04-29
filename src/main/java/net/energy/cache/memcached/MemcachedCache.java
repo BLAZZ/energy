@@ -16,11 +16,11 @@ import com.danga.MemCached.MemCachedClient;
  */
 public class MemcachedCache extends MultiLevelCache implements Cache {
 	private final MemCachedClient client;
-	
+
 	public MemcachedCache(MemCachedClient client) {
 		this.client = client;
 	}
-	
+
 	@Override
 	protected void doAdd(final String key, final Object value) {
 		add(key, value, 0L);
@@ -28,21 +28,22 @@ public class MemcachedCache extends MultiLevelCache implements Cache {
 
 	@Override
 	protected void doAdd(final String key, final Object value, final long expiry) {
-		if(value == null) { // can't set a null value to memcached
+		if (value == null) { // can't set a null value to memcached
 			return;
 		}
-		Date expireDate = new Date(expiry);;
+		Date expireDate = new Date(expiry);
+		;
 		boolean ok = client.set(key, value, expireDate);
-		if(!ok) {
-			CacheErrorHandler.handleError(new Exception("add Object to memcache failed"));
+		if (!ok) {
+			CacheErrorHandler.handleError(new Exception("Memcached：缓存对象[" + value + "]到[" + key + "]失败"));
 		}
 	}
 
 	@Override
 	protected boolean doDelete(final String key) {
 		boolean ok = client.delete(key);
-		if(!ok) {
-			CacheErrorHandler.handleError(new Exception("delete Object in memcache failed"));
+		if (!ok) {
+			CacheErrorHandler.handleError(new Exception("Memcached：删除缓存Key[" + key + "]对应的对象失败"));
 		}
 		return ok;
 	}
@@ -50,8 +51,8 @@ public class MemcachedCache extends MultiLevelCache implements Cache {
 	@Override
 	protected void doRemoveAll() {
 		boolean ok = client.flushAll();
-		if(!ok) {
-			CacheErrorHandler.handleError(new Exception("flushAll Object in memcache failed"));
+		if (!ok) {
+			CacheErrorHandler.handleError(new Exception("Memcached：清除所有缓存对象失败"));
 		}
 	}
 

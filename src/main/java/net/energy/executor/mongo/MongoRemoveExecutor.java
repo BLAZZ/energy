@@ -3,11 +3,11 @@ package net.energy.executor.mongo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.mongo.MongoRemoveDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
-import net.energy.mongo.definition.MongoRemoveDefinition;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +39,12 @@ public class MongoRemoveExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 
-		LOGGER.info("Mongo Remove Shell With Token:" + actualShell);
-
+		LOGGER.info("Mongo删除操作Shell(带Token)[" + actualShell + "]");
+		
 		// 构造删除操作的数据结构
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		boolean result = dataAccessor.remove(collectionName, shell);

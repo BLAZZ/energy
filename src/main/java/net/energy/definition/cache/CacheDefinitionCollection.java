@@ -1,9 +1,10 @@
-package net.energy.cache.definition;
+package net.energy.definition.cache;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,9 +54,11 @@ public class CacheDefinitionCollection {
 		}
 
 		if (cacheDefinition != null && (cacheDeleteDefinitions != null || versionUpdateDefinitions != null)) {
-			LOGGER.info("@Cache can't be used with other Cache Annotation, and it will be not effective");
-			cacheDefinition = null;
+			throw new DaoGenerateException("方法[" + method
+					+ "]配置错误：方法中@Cache注解不能和其他的缓存更新类注解（@CacheDelete、@VerUpdate、@CacheUpdate）共存");
 		}
+		
+		logBindInfo(method);
 	}
 
 	public boolean needCacheOpration() {
@@ -99,4 +102,45 @@ public class CacheDefinitionCollection {
 		}
 	}
 
+	private String getCacheDescription(CacheDefinition cache) {
+		String desc = "@Cache(key=[" + cache.getKey() + "],pool=[" + cache.getPool() + "],expire=[" + cache.getExpire()
+				+ "(毫秒)]";
+
+		if (StringUtils.isNotBlank(cache.getVkey())) {
+			desc = desc + ",vkey=[" + cache.getVkey() + "]";
+		}
+
+		desc = desc + ")";
+
+		return desc;
+	}
+
+	private String getCacheDeleteDescription(CacheDeleteDefinition delete) {
+		return "@CacheDelete(key=[" + delete.getKey() + "],pool=[" + delete.getPool() + "])";
+	}
+
+	private String getVerUpdateDescription(VersionUpdateDefinition update) {
+		return "@VerUpdate(vkey=[" + update.getVkey() + "],pool=[" + update.getPool() + "],expire=[" + update.getExpire()
+				+ "(毫秒)])";
+	}
+	
+	private void logBindInfo(Method method) {
+		boolean debugEnable = LOGGER.isDebugEnabled();
+		
+		if(cacheDefinition != null && debugEnable) {
+			LOGGER.debug("绑定"+getCacheDescription(cacheDefinition) + "到方法["+method+"]成功");
+		}
+		
+		if(cacheDeleteDefinitions != null && debugEnable) {
+			for(CacheDeleteDefinition definition : cacheDeleteDefinitions) {
+				LOGGER.debug("绑定"+getCacheDeleteDescription(definition) + "到方法["+method+"]成功");
+			}
+		}
+		
+		if(versionUpdateDefinitions != null && debugEnable) {
+			for(VersionUpdateDefinition definition : versionUpdateDefinitions) {
+				LOGGER.debug("绑定"+getVerUpdateDescription(definition) + "到方法["+method+"]成功");
+			}
+		}
+	}
 }

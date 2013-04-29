@@ -3,12 +3,12 @@ package net.energy.executor.mongo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.mongo.MongoUpdateDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
 import net.energy.mongo.MongoUpdate;
-import net.energy.mongo.definition.MongoUpdateDefinition;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +40,7 @@ public class MongoUpdateExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 
@@ -52,11 +52,11 @@ public class MongoUpdateExecutor extends AbstractMongoExecutor {
 		Integer[] modifierParameterIndexes = definition.getModifierParameterIndexes();
 		String modifier = definition.getModifierShellWithToken();
 		List<String> modifierParameterNames = definition.getParsedModifierShell().getParameterNames();
-		Object[] modifierParamArray = CommonUtils.fetchVlaues(modifierGetterMethods, modifierParameterIndexes, args,
+		Object[] modifierParamArray = ReflectionUtils.fetchVlaues(modifierGetterMethods, modifierParameterIndexes, args,
 				modifierParameterNames);
 
-		LOGGER.info("Mongo Update Shell With Token:" + actualShell);
-		LOGGER.info("Mongo Modifier Shell With Token:" + modifier);
+		LOGGER.info("Mongo更新,查询部分Shell(带Token)[" + actualShell + "]");
+		LOGGER.info("Mongo更新,更新部分Shell(带Token)[" + modifier + "]");
 
 		// 构造查询、更新的数据结构
 		MongoShell query = new MongoShell(actualShell, paramArray);

@@ -1,10 +1,14 @@
 package net.energy.factory;
 
-import net.energy.interceptor.MongoDataAccessInterceptor;
+import java.lang.reflect.Method;
+
+import net.energy.exception.DaoGenerateException;
+import net.energy.executor.DataAccessExecutor;
+import net.energy.executor.ExecutorFactory;
 import net.energy.mongo.MongoDataAccessor;
 
 /**
- * 有此工厂子类获取的DAO实例都为MONGODB操作类，且带有缓存
+ * 用于创建带缓存的MongoDB操作实例工厂类
  * 
  * @author wuqh
  * @see MongoDataAccessor
@@ -12,12 +16,13 @@ import net.energy.mongo.MongoDataAccessor;
 public class CacheableMongoFactory extends AbstractCacheableFactory {
 	private MongoDataAccessor dataAccessor;
 
-	public synchronized MongoDataAccessInterceptor getDataAccessInterceptor() {
-		MongoDataAccessInterceptor interceptor = new MongoDataAccessInterceptor(getCacheManager(), dataAccessor);
-		return interceptor;
-	}
-
 	public void setDataAccessor(MongoDataAccessor dataAccessor) {
 		this.dataAccessor = dataAccessor;
+	}
+
+	@Override
+	protected DataAccessExecutor createDataAccessExecutor(Method method) throws DaoGenerateException {
+		DataAccessExecutor executor = ExecutorFactory.createMongoExecutor(getCacheManager(), dataAccessor, method);
+		return executor;
 	}
 }

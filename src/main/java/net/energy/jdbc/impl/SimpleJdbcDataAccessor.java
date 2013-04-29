@@ -103,7 +103,7 @@ public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
 	public int queryCount(String sql, Object... args) {
 		String countSql = dialect.getCountSql(sql);
 
-		LOGGER.info("Count total page size SQL:" + countSql);
+		LOGGER.info("用于Count操作的SQL:" + countSql);
 		RowMapper<Integer> rowMapper = new CountRowMapper();
 		List<Integer> results = query(countSql, rowMapper, 0, args);
 		return getSingleResult(results);
@@ -119,7 +119,7 @@ public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
 		}
 		String pageSql = dialect.getPaginationSql(sql, page);
 
-		LOGGER.info("Pagination Query SQL:" + pageSql);
+		LOGGER.info("分页查询操作SQL:" + pageSql);
 
 		return query(pageSql, rowMapper, fetchSize, args);
 	}

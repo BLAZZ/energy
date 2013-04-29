@@ -1,4 +1,4 @@
-package net.energy.utils;
+package net.energy.definition;
 
 import java.lang.reflect.Method;
 

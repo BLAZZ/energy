@@ -3,11 +3,11 @@ package net.energy.executor.mongo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.mongo.MongoCountDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
-import net.energy.mongo.definition.MongoCountDefinition;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +39,12 @@ public class MongoCountExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 		
 		String collectionName = definition.getCollectionName(args);
 
-		LOGGER.info("Mongo Count Shell With Token:" + actualShell);
-
+		LOGGER.info("Mongo统计操作Shell(带Token)[" + actualShell + "]");
+		
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		long result = dataAccessor.count(collectionName, shell);
 		

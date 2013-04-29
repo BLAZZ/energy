@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.energy.exception.IllegalMongoShellException;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ExpressionUtils;
 
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Binary;
@@ -26,7 +26,7 @@ import com.mongodb.util.JSON;
  * 用于MongoDB的Shell和数据绑定
  * 
  * @author wuqh
- *
+ * 
  */
 public class QueryBuilder {
 	private static final Set<Class<?>> PRIMITIVES;
@@ -50,8 +50,8 @@ public class QueryBuilder {
 		PRIMITIVES.add(DBRefBase.class);
 		PRIMITIVES.add(CodeWScope.class);
 		PRIMITIVES.add(Binary.class);
-		
-		TOKEN = CommonUtils.SHELL_TOKEN;
+
+		TOKEN = ExpressionUtils.SHELL_TOKEN;
 		PATTERN = Pattern.compile(TOKEN);
 	}
 
@@ -74,10 +74,10 @@ public class QueryBuilder {
 		try {
 			return (DBObject) JSON.parse(finalQuery);
 		} catch (Exception e) {
-			throw new IllegalMongoShellException("Illegal Expression of Mongo Query String");
+			throw new IllegalMongoShellException("Mongo Query表达式式非法:", e);
 		}
 	}
-	
+
 	public static String generateQuery(String query, Object... parameters) {
 		assertThatParamsCanBeBound(query, parameters);
 		int paramIndex = 0;
@@ -103,7 +103,7 @@ public class QueryBuilder {
 		if (QueryBuilder.isBsonPrimitives(parameter.getClass())) {
 			return convertWithDriver(parameter);
 		}
-		String message = String.format("Unable to convert a non-bson-primitive parameter: %s to json", parameter);
+		String message = "无法将非BSON基本类型(non-bson-primitive)参数[" + parameter + "]绑定到查询json字符串中";
 		throw new IllegalMongoShellException(message);
 	}
 
@@ -111,22 +111,22 @@ public class QueryBuilder {
 		try {
 			return JSON.serialize(parameter);
 		} catch (Exception e) {
-			String message = String.format("Unable to convert json from: %s", parameter);
+			String message = "无法将参数[" + parameter + "]绑定到查询json字符串中";
 			throw new IllegalMongoShellException(message, e);
 		}
 	}
 
 	private static String handleInvalidBinding(String query, Object parameter, RuntimeException e) {
-		String message = String.format("Unable to bind parameter: %s into query: %s", parameter, query);
+		String message = "绑定参数[" + parameter + "]到查询语句[" + query + "]失败";
 		throw new IllegalMongoShellException(message, e);
 	}
 
 	private static void assertThatParamsCanBeBound(String template, Object[] parameters) {
 		int nbTokens = countTokens(template);
 		if (nbTokens != parameters.length) {
-			String message = String.format(
-					"Unable to bind parameters into query: %s. Tokens and parameters numbers mismatch "
-							+ "[tokens: %s / parameters:%s]", template, nbTokens, parameters.length);
+			String message = "绑定参数到查询语句[" + template + "]失败：参数个数[" + parameters.length + "]和Shell中Token个数[" + nbTokens
+					+ "]不匹配";
+
 			throw new IllegalMongoShellException(message);
 		}
 	}

@@ -3,7 +3,7 @@ package net.energy.factory;
 import net.energy.cache.CacheManager;
 
 /**
- * 有此工厂子类获取的DAO实例都带有缓存
+ * 用于创建带有缓存的DAO实例的工厂类
  * 
  * @author wuqh
  * @see CacheManager

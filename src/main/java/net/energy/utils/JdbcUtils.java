@@ -37,11 +37,11 @@ public class JdbcUtils {
 	 */
 	public static Connection getConnection(DataSource dataSource) {
 		try {
-			Assert.notNull(dataSource, "No DataSource specified");
+			Assert.notNull(dataSource, "必须指定DataSource");
 
 			return dataSource.getConnection();
 		} catch (SQLException ex) {
-			throw new JdbcDataAccessException("Could not get JDBC Connection", ex);
+			throw new JdbcDataAccessException("获取JDBC Connection失败", ex);
 		}
 	}
 
@@ -88,8 +88,8 @@ public class JdbcUtils {
 	 */
 	public static void setParameterValue(PreparedStatement ps, int paramIndex, Object inValue) throws SQLException {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Setting SQL statement parameter value: column index " + paramIndex + ", parameter value ["
-					+ inValue + "], value class [" + (inValue != null ? inValue.getClass().getName() : "null") + "]");
+			LOGGER.debug("绑定PreparedStatement参数: 参数列序号[" + paramIndex + "], 参数值["
+					+ inValue + "],参数类型[" + (inValue != null ? inValue.getClass().getName() : "null") + "]");
 		}
 
 		if (inValue == null) {
@@ -121,7 +121,7 @@ public class JdbcUtils {
 				sqlType = Types.VARCHAR;
 			}
 		} catch (Throwable ex) {
-			LOGGER.debug("Could not check database or driver name", ex);
+			LOGGER.debug("获取JDBC驱动信息失败", ex);
 		}
 		if (useSetObject) {
 			ps.setObject(paramIndex, null);
@@ -139,9 +139,9 @@ public class JdbcUtils {
 	 * @throws SQLException
 	 */
 	private static void setValue(PreparedStatement ps, int paramIndex, Object inValue) throws SQLException {
-		if (TypeUtils.isTypeString(inValue.getClass())) {
+		if (EnergyClassUtils.isTypeString(inValue.getClass())) {
 			ps.setString(paramIndex, inValue.toString());
-		} else if (TypeUtils.isTypeDate(inValue.getClass())) {
+		} else if (EnergyClassUtils.isTypeDate(inValue.getClass())) {
 			ps.setTimestamp(paramIndex, new Timestamp(((java.util.Date) inValue).getTime()));
 		} else if (inValue instanceof Calendar) {
 			Calendar cal = (Calendar) inValue;
@@ -164,11 +164,11 @@ public class JdbcUtils {
 					con.close();
 				}
 			} catch (SQLException ex) {
-				LOGGER.debug("Could not close JDBC Connection", ex);
+				LOGGER.debug("关闭JDBC Connection失败", ex);
 			} catch (Throwable ex) {
 				// We don't trust the JDBC driver: It might throw
 				// RuntimeException or Error.
-				LOGGER.debug("Unexpected exception on closing JDBC Connection", ex);
+				LOGGER.debug("关闭JDBC Connection时发生未知异常", ex);
 			}
 		}
 	}
@@ -183,11 +183,11 @@ public class JdbcUtils {
 			try {
 				stmt.close();
 			} catch (SQLException ex) {
-				LOGGER.trace("Could not close JDBC Statement", ex);
+				LOGGER.trace("关闭JDBC Statement失败", ex);
 			} catch (Throwable ex) {
 				// We don't trust the JDBC driver: It might throw
 				// RuntimeException or Error.
-				LOGGER.trace("Unexpected exception on closing JDBC Statement", ex);
+				LOGGER.trace("关闭JDBC Statement时发生未知异常", ex);
 			}
 		}
 	}
@@ -202,11 +202,11 @@ public class JdbcUtils {
 			try {
 				rs.close();
 			} catch (SQLException ex) {
-				LOGGER.trace("Could not close JDBC ResultSet", ex);
+				LOGGER.trace("关闭JDBC ResultSet失败", ex);
 			} catch (Throwable ex) {
 				// We don't trust the JDBC driver: It might throw
 				// RuntimeException or Error.
-				LOGGER.trace("Unexpected exception on closing JDBC ResultSet", ex);
+				LOGGER.trace("关闭JDBC ResultSet发生未知异常", ex);
 			}
 		}
 	}
@@ -223,16 +223,16 @@ public class JdbcUtils {
 			DatabaseMetaData dbmd = con.getMetaData();
 			if (dbmd != null) {
 				if (dbmd.supportsBatchUpdates()) {
-					LOGGER.debug("JDBC driver supports batch updates");
+					LOGGER.debug("JDBC驱动支持批量更新");
 					return true;
 				} else {
-					LOGGER.debug("JDBC driver does not support batch updates");
+					LOGGER.debug("JDBC驱动不支持批量更新");
 				}
 			}
 		} catch (SQLException ex) {
-			LOGGER.debug("JDBC driver 'supportsBatchUpdates' method threw exception", ex);
+			LOGGER.debug("调用JDBC驱动'supportsBatchUpdates'方法发生异常", ex);
 		} catch (AbstractMethodError err) {
-			LOGGER.debug("JDBC driver does not support JDBC 2.0 'supportsBatchUpdates' method", err);
+			LOGGER.debug("JDBC不支持JDBC 2.0的'supportsBatchUpdates'方法", err);
 		}
 		return false;
 	}

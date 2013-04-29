@@ -19,7 +19,7 @@ class CountRowMapper implements RowMapper<Integer> {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int nrOfColumns = rsmd.getColumnCount();
 		if (nrOfColumns != 1) {
-			throw new CountRowNumberException("Incorrect column count: expected 1, actual " + nrOfColumns);
+			throw new CountRowNumberException("返回记录数过多:期望1条, 实际" + nrOfColumns + "条");
 		}
 		return rs.getInt(1);
 	}

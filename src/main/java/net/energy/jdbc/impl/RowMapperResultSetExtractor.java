@@ -37,7 +37,7 @@ class RowMapperResultSetExtractor<T> {
 	 * (just used for optimized collection handling)
 	 */
 	public RowMapperResultSetExtractor(RowMapper<T> rowMapper, int rowsExpected) {
-		Assert.notNull(rowMapper, "RowMapper is required");
+		Assert.notNull(rowMapper, "RowMapper不能为空");
 		this.rowMapper = rowMapper;
 		this.rowsExpected = rowsExpected;
 	}

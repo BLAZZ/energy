@@ -11,22 +11,22 @@ public class TaskNotReturnException extends RuntimeException {
 
 	public TaskNotReturnException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public TaskNotReturnException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public TaskNotReturnException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public TaskNotReturnException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }

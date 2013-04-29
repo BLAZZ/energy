@@ -32,8 +32,8 @@ public class FindCallBack<T> implements CollectionCallback<List<T>> {
 	 * @param mapper ORM使用的映射接口实现类
 	 */
 	public FindCallBack(DBObject queryDbObject, int batchSize, BeanMapper<T> mapper) {
-		Assert.notNull(queryDbObject, "DBObject queryDbObject can't be null");
-		Assert.notNull(mapper, "BeanMapper mapper can't be null");
+		Assert.notNull(queryDbObject, "参数queryDbObject不能为空");
+		Assert.notNull(mapper, "参数mapper不能为空");
 		this.queryDbObject = queryDbObject;
 		this.batchSize = batchSize;
 		this.mapper = mapper;

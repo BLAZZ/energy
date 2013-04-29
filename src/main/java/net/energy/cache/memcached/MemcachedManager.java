@@ -92,7 +92,7 @@ public class MemcachedManager extends MultiLevelCacheManager implements CacheMan
 			try {
 				initializePool(pool);
 			} catch (Exception e) {
-				throw new CacheUnreachableException("Can't create Memcached Instance");
+				throw new CacheUnreachableException("创建Memcached实例失败");
 			}
 
 		}
@@ -101,7 +101,7 @@ public class MemcachedManager extends MultiLevelCacheManager implements CacheMan
 	}
 
 	public void initializePool(SockIOPool pool) throws Exception {
-		Assert.notNull(servers, "servers can not be null");
+		Assert.notNull(servers, "Servers必须设置");
 		pool.setServers(servers);
 		if (weights != null) {
 			pool.setWeights(weights);

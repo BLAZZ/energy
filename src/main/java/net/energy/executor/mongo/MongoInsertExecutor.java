@@ -3,11 +3,11 @@ package net.energy.executor.mongo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.mongo.MongoInsertDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
-import net.energy.mongo.definition.MongoInsertDefinition;
-import net.energy.utils.CommonUtils;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,11 +39,11 @@ public class MongoInsertExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 		
 		String collectionName = definition.getCollectionName(args);
 
-		LOGGER.info("Mongo Insert Shell With Token:" + actualShell);
+		LOGGER.info("Mongo插入操作Shell(带Token)[" + actualShell + "]");
 		
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		boolean result = dataAccessor.insert(collectionName, shell);

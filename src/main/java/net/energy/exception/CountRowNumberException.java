@@ -11,22 +11,22 @@ public class CountRowNumberException extends DataAccessException {
 
 	public CountRowNumberException() {
 		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CountRowNumberException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CountRowNumberException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public CountRowNumberException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }

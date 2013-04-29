@@ -21,7 +21,7 @@ public class MongoFindTask extends Task {
 	private final SimpleMongoDataAccessor dataAccessor;
 	
 	public MongoFindTask(SimpleMongoDataAccessor dataAccessor) {
-		Assert.isNull(dataAccessor, "DataAccessorObject can't be null");
+		Assert.isNull(dataAccessor, "DataAccessor实例不能为空");
 		this.dataAccessor = dataAccessor;
 	}
 	

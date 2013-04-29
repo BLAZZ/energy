@@ -3,13 +3,13 @@ package net.energy.executor.mongo;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.energy.definition.mongo.MongoFindDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.BeanMapper;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoQuery;
-import net.energy.mongo.definition.MongoFindDefinition;
-import net.energy.utils.CommonUtils;
 import net.energy.utils.Page;
+import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +45,7 @@ public class MongoFindExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = CommonUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 
@@ -55,13 +55,12 @@ public class MongoFindExecutor extends AbstractMongoExecutor {
 		query.setSort(sort);
 
 		// 判断是否为分页查询，如果是则进行分页查询
-		int pageIndex = definition.getPageIndex();
-		Page page = CommonUtils.getPageArgument(args, pageIndex);
+		Page page = definition.getPageArgument(args);
 		if (page != null) {
 			return dataAccessor.findPage(collectionName, query, beanMapper, page);
 		}
 
-		LOGGER.info("Query Shell With Token:" + actualShell);
+		LOGGER.info("Mongo查询操作Shell(带Token)[" + actualShell + "]");
 
 		// 不是分页，进行普通查询
 		Integer skip = definition.getSkip(args);
@@ -83,7 +82,7 @@ public class MongoFindExecutor extends AbstractMongoExecutor {
 				return null;
 			}
 			if (result.size() > 1) {
-				LOGGER.debug("result size > 1, fetch the 1st result");
+				LOGGER.debug("返回记录数 >1,默认获取第一条记录");
 			}
 			return result.get(0);
 		} else {
