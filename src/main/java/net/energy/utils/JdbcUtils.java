@@ -139,9 +139,9 @@ public class JdbcUtils {
 	 * @throws SQLException
 	 */
 	private static void setValue(PreparedStatement ps, int paramIndex, Object inValue) throws SQLException {
-		if (EnergyClassUtils.isTypeString(inValue.getClass())) {
+		if (ClassHelper.isTypeString(inValue.getClass())) {
 			ps.setString(paramIndex, inValue.toString());
-		} else if (EnergyClassUtils.isTypeDate(inValue.getClass())) {
+		} else if (ClassHelper.isTypeDate(inValue.getClass())) {
 			ps.setTimestamp(paramIndex, new Timestamp(((java.util.Date) inValue).getTime()));
 		} else if (inValue instanceof Calendar) {
 			Calendar cal = (Calendar) inValue;

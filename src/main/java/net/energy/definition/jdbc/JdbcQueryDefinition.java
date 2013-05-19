@@ -8,7 +8,8 @@ import net.energy.annotation.jdbc.MapperBy;
 import net.energy.annotation.jdbc.Query;
 import net.energy.exception.DaoGenerateException;
 import net.energy.jdbc.RowMapper;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.jdbc.impl.AutoDetectRowMapper;
+import net.energy.utils.ClassHelper;
 import net.sf.cglib.core.ReflectUtils;
 
 import org.apache.commons.logging.Log;
@@ -55,27 +56,32 @@ public class JdbcQueryDefinition extends BaseJdbcDefinition {
 		super.checkBeforeParse(method);
 
 		MapperBy mapperBy = method.getAnnotation(MapperBy.class);
-		if (mapperBy == null) {
-			throw new DaoGenerateException("方法[" + method + "]配置错误：@Query注解必须和@MapperBy注解一起使用");
+		if (mapperBy == null
+				&& (ClassHelper.isTypeList(method.getReturnType()) && ClassHelper.getReturnGenericType(method) == null)) {
+			throw new DaoGenerateException("方法[" + method + "]配置错误：：返回值必须存在指定泛型类，或者请使用@MapperBy注解");
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void checkAfterParse(Method method) throws DaoGenerateException {
 		super.checkAfterParse(method);
 
 		MapperBy mapperBy = method.getAnnotation(MapperBy.class);
-		Class<? extends RowMapper<?>> mapperType = mapperBy.value();
+		Class<? extends RowMapper> mapperType = AutoDetectRowMapper.class;
+		if (mapperBy != null) {
+			mapperType = mapperBy.value();
+		}
 
 		Class<?> returnType = method.getReturnType();
 		if (isUnique) {
-			Class<?> expectedType = EnergyClassUtils.getGenericType(mapperType);
-			if (!EnergyClassUtils.isAssignable(returnType, expectedType, true)) {
+			Class<?> expectedType = ClassHelper.getInterfaceGenericType(mapperType);
+			if (!ClassHelper.isAssignable(returnType, expectedType, true)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：方法返回类型[" + returnType.getName()
 						+ "]和@MappedBy注解中配置的类型[" + expectedType.getName() + "]不一致；或者请去掉@MappedBy注解");
 			}
 		} else {
-			if (!EnergyClassUtils.isTypeList(returnType)) {
+			if (!ClassHelper.isTypeList(returnType)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：方法返回[java.util.List]类型 ，而实际返回类型["
 						+ returnType.getName() + "]；或者请增加@Unique注解");
 			}
@@ -87,20 +93,37 @@ public class JdbcQueryDefinition extends BaseJdbcDefinition {
 	 * 
 	 * @param method
 	 */
+	@SuppressWarnings("rawtypes")
 	private void configRowMapper(Method method) {
 		MapperBy mapperBy = method.getAnnotation(MapperBy.class);
-		Class<? extends RowMapper<?>> mapperType = mapperBy.value();
-		rowMapper = (RowMapper<?>) ReflectUtils.newInstance(mapperType);
+		Class<? extends RowMapper> mapperType = AutoDetectRowMapper.class;
+		if (mapperBy != null) {
+			mapperType = mapperBy.value();
+		}
+
+		if (AutoDetectRowMapper.class.equals(mapperType)) {
+			Class<?> type = method.getReturnType();
+			if (ClassHelper.isTypeList(type)) {
+				type = ClassHelper.getReturnGenericType(method);
+			}
+
+			rowMapper = (RowMapper<?>) ReflectUtils.newInstance(mapperType, new Class[] { Class.class },
+					new Object[] { type });
+		} else {
+
+			rowMapper = (RowMapper<?>) ReflectUtils.newInstance(mapperType);
+		}
 	}
 
 	/**
-	 * 获取查询的Unique配置，判断方法上是否有@Unique
+	 * 获取查询的Unique配置，判断方法上是否有@Unique，或者返回类型是否为List
 	 * 
 	 * @param method
 	 */
 	private void configUnique(Method method) {
 		Unique unique = method.getAnnotation(Unique.class);
-		if (unique != null) {
+		Class<?> returnType = method.getReturnType();
+		if (unique != null || !ClassHelper.isTypeList(returnType)) {
 			isUnique = true;
 		} else {
 			isUnique = false;

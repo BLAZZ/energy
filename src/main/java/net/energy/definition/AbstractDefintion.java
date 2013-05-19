@@ -11,8 +11,8 @@ import net.energy.annotation.GenericTable;
 import net.energy.annotation.Param;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ParsedExpression;
-import net.energy.utils.EnergyArrayUtils;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ArrayHelper;
+import net.energy.utils.ClassHelper;
 import net.energy.utils.Page;
 import net.energy.utils.ReflectionUtils;
 
@@ -153,12 +153,18 @@ public abstract class AbstractDefintion {
 	 *            parameter的每个参数的类型
 	 * 
 	 */
-	protected void parseParameterAnnotations(Method method, Annotation[][] annotations,
+	private void parseParameterAnnotations(Method method, Annotation[][] annotations,
 			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes)
 			throws DaoGenerateException {
+		
+		String[] paramNames = ReflectionUtils.PARAMETER_NAME_DISCOVERER.getParameterNames(method);
+		
 		for (int index = 0; index < annotations.length; index++) {
+			boolean initParamName = true;
+			boolean initBatchParamName = true;
 
 			for (Annotation annotation : annotations[index]) {
+				
 				Class<? extends Annotation> annotationType = annotation.annotationType();
 				if (Param.class.equals(annotationType)) {
 					Param param = (Param) annotation;
@@ -170,16 +176,18 @@ public abstract class AbstractDefintion {
 					}
 
 					addParam(value, index, paramIndexes);
+					initParamName = false;
 				}
 				if (BatchParam.class.equals(annotationType) && batchParamIndexMap != null) {
 					BatchParam param = (BatchParam) annotation;
 					String value = param.value();
 
-					if (!EnergyClassUtils.isTypeArray(paramTypes[index])) {
-						throw new DaoGenerateException("方法[" + method + "]配置错误：@BatchParam只能配置在数组上");
+					if (!ClassHelper.isTypeArray(paramTypes[index]) && !ClassHelper.isTypeList(paramTypes[index])) {
+						throw new DaoGenerateException("方法[" + method + "]配置错误：@BatchParam只能配置在数组或者List实现类上");
 					}
 
 					addBatchParam(value, index, batchParamIndexMap);
+					initBatchParamName = false;
 
 				}
 				if (GenericTable.class.equals(annotationType)) {
@@ -189,50 +197,33 @@ public abstract class AbstractDefintion {
 					addGenericTable(index, order);
 				}
 			}
-		}
-
-		parseParameterNames(method, paramIndexes, batchParamIndexMap, paramTypes);
-	}
-
-	/**
-	 * 解析参数名称，使用参数名生成等价的@Param参数和@BatchParam参数
-	 * 
-	 * @param method
-	 * @param paramIndexes
-	 * @param batchParamIndexMap
-	 * @param paramTypes
-	 * @throws DaoGenerateException
-	 */
-	protected void parseParameterNames(Method method, Map<String, Integer> paramIndexes,
-			Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes) throws DaoGenerateException {
-		String[] paramNames = ReflectionUtils.PARAMETER_NAME_DISCOVERER.getParameterNames(method);
-
-		if (paramNames == null) {
-			return;
-		}
-
-		for (int index = 0; index < paramNames.length; index++) {
+			
+			if (paramNames == null || !initParamName || !initBatchParamName) {
+				continue;
+			}
+			
 			String paramName = paramNames[index];
-
 			if (RESULT_PARAM_VALUE.equals(paramName)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：方法的参数名称不能使用保留关键字\"" + RESULT_PARAM_VALUE + "\"");
 			}
-
+			
 			Class<?> type = paramTypes[index];
 
-			if (EnergyClassUtils.isTypeArray(type)) {
-				addBatchParam(paramName, index, batchParamIndexMap);
-			} else {
+			if (ClassHelper.isTypeArray(type) || ClassHelper.isTypeList(type)) {
+				if(initBatchParamName) {
+					addBatchParam(paramName, index, batchParamIndexMap);
+				}
+			} else if(initParamName) {
 				addParam(paramName, index, paramIndexes);
 			}
 
-			if (EnergyClassUtils.isTypePage(type) && pageIndex == -1) {
+			if (ClassHelper.isTypePage(type) && pageIndex == -1) {
 				pageIndex = index;
 			} else if (pageIndex != -1) {
 				LOGGER.info("方法中已经存在Page类型对象，系统自动忽略");
 			}
 		}
-
+		
 	}
 
 	/**
@@ -248,11 +239,11 @@ public abstract class AbstractDefintion {
 		}
 		Integer annotationIndex = batchParamIndexMap.get(paramName);
 		if (annotationIndex != null) {
-			LOGGER.info("参数" + paramName + "上已经存在@BatchParam注解");
+			LOGGER.info("已经存在@BatchParam(\"" + paramName + "\")注解");
 			return;
 		}
 		batchParamIndexMap.put(paramName, index);
-		batchParamIndexes = (Integer[]) EnergyArrayUtils.add(batchParamIndexes, new Integer(index));
+		batchParamIndexes = (Integer[]) ArrayHelper.add(batchParamIndexes, new Integer(index));
 	}
 
 	/**
@@ -268,7 +259,7 @@ public abstract class AbstractDefintion {
 		}
 		Integer annotationIndex = paramIndexes.get(paramName);
 		if (annotationIndex != null) {
-			LOGGER.info("参数" + paramName + "上已经存在@Param注解");
+			LOGGER.info("已经存在@Param注(\"" + paramName + "\")解");
 			return;
 		}
 		paramIndexes.put(paramName, index);
@@ -281,7 +272,7 @@ public abstract class AbstractDefintion {
 	 * @param order
 	 */
 	protected void addGenericTable(Integer index, int order) {
-		genericIndexes = net.energy.utils.EnergyArrayUtils.addElemToArray(genericIndexes, index, order);
+		genericIndexes = net.energy.utils.ArrayHelper.addElemToArray(genericIndexes, index, order);
 	}
 
 	/**
@@ -300,7 +291,7 @@ public abstract class AbstractDefintion {
 		if (batchParamIndexes == null || batchParamIndexes.isEmpty()) {
 			return ReflectionUtils.getGettersAndIndexes(parameterNames, paramIndexes, paramTypes);
 		} else {
-			return ReflectionUtils.getGettersAndIndexes(parameterNames, paramIndexes, batchParamIndexes, paramTypes);
+			return ReflectionUtils.getGettersAndIndexes(method, parameterNames, paramIndexes, batchParamIndexes, paramTypes);
 		}
 	}
 

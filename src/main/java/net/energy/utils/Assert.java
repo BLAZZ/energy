@@ -44,4 +44,16 @@ public class Assert {
 			throw new IllegalArgumentException(message);
 		}
 	}
+	
+	/**
+	 * 断言表达式必须为真，否则将抛出IllegalArgumentException
+	 * 
+	 * @param expression
+	 * @param message
+	 */
+	public static void isTrue(boolean expression, String message) {
+		if(!expression) {
+			throw new IllegalArgumentException(message);
+		}
+	}
 }

@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.energy.mongo.BeanMapper;
+import net.energy.mongo.impl.AutoDetectBeanMapper;
 
 /**
  * ORM映射接口配置，这个和SpringJdbcTemplate中使用的RowMapper是类似的，不解释。
@@ -21,5 +22,6 @@ public @interface MongoMapper {
 	 * 
 	 * @return
 	 */
-	Class<? extends BeanMapper<?>> value();
+	@SuppressWarnings("rawtypes")
+	Class<? extends BeanMapper> value() default AutoDetectBeanMapper.class;
 }

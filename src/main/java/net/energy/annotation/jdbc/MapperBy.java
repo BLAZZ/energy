@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.energy.jdbc.RowMapper;
+import net.energy.jdbc.impl.AutoDetectRowMapper;
 
 /**
  * ORM映射接口配置，这个和SpringJdbcTemplate中使用的RowMapper是一样的，不解释。
@@ -21,5 +22,6 @@ public @interface MapperBy {
 	 * 
 	 * @return
 	 */
-	Class<? extends RowMapper<?>> value();
+	@SuppressWarnings("rawtypes")
+	Class<? extends RowMapper> value() default AutoDetectRowMapper.class;
 }

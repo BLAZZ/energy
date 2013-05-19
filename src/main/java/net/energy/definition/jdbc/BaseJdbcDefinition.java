@@ -9,7 +9,7 @@ import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
 import net.energy.expression.ParserFacotory;
 import net.energy.expression.ParserFacotory.ExpressionType;
-import net.energy.utils.EnergyArrayUtils;
+import net.energy.utils.ArrayHelper;
 import net.energy.utils.ExpressionUtils;
 import net.energy.utils.SqlFormatter;
 
@@ -90,7 +90,7 @@ public abstract class BaseJdbcDefinition extends AbstractDefintion {
 				if (index != null) {
 					Object arg = args[index];
 					if (arg != null) {
-						tableNames = (String[]) EnergyArrayUtils.add(tableNames, arg.toString());
+						tableNames = (String[]) ArrayHelper.add(tableNames, arg.toString());
 					}
 				}
 			}

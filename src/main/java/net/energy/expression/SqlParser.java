@@ -1,8 +1,6 @@
 package net.energy.expression;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.energy.utils.Assert;
@@ -14,16 +12,12 @@ import net.energy.utils.Assert;
  * 
  */
 public class SqlParser extends AbstractExpressionParser {
-	private static final int DEFAULT_CACHE_LIMIT = 256;
 	private final char[] parameterSeparators = new char[] { '"', '\'', ':', '&', ',', ';', '(', ')', '|', '=', '+',
 			'-', '*', '%', '/', '\\', '<', '>', '^' };
 
 	private final String[] startSkip = new String[] { "'", "\"", "--", "/*" };
 
 	private final String[] stopSkip = new String[] { "'", "\"", "\n", "*/" };
-
-	private static final Map<String, ParsedExpression> PARSEDE_SQL_CACHE = new HashMap<String, ParsedExpression>(
-			DEFAULT_CACHE_LIMIT);
 
 	@Override
 	protected char[] getParameterSeparators() {
@@ -41,12 +35,7 @@ public class SqlParser extends AbstractExpressionParser {
 	}
 
 	public ParsedExpression parse(String sql) {
-		ParsedExpression parsedSql = PARSEDE_SQL_CACHE.get(sql);
-		if (parsedSql == null) {
-			parsedSql = parseSql(sql);
-			PARSEDE_SQL_CACHE.put(sql, parsedSql);
-		}
-		return parsedSql;
+		return parseSql(sql);
 	}
 
 	private ParsedExpression parseSql(String sql) {

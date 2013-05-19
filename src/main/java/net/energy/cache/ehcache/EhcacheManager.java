@@ -7,7 +7,7 @@ import net.energy.cache.CacheManager;
 import net.energy.cache.MultiLevelCache;
 import net.energy.cache.MultiLevelCacheManager;
 import net.energy.exception.CacheUnreachableException;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 import net.sf.ehcache.bootstrap.BootstrapCacheLoader;
 import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
@@ -128,7 +128,7 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 			InputStream is = null;
 			if (StringUtils.isNotEmpty(configLocation)) {
 				configLocation = StringUtils.replaceOnce(configLocation, CLASSPATH_PREFIX, "");
-				is = EnergyClassUtils.getClassLoader().getResourceAsStream(configLocation);
+				is = ClassHelper.getClassLoader().getResourceAsStream(configLocation);
 				if (is == null) {
 					LOGGER.info("没有在ClassPath中找到文件[" + configLocation + "]，系统将使用默认的EHCache配置");
 				}

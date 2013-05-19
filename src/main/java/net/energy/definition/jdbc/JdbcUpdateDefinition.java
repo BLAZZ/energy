@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import net.energy.annotation.ReturnId;
 import net.energy.annotation.jdbc.Update;
 import net.energy.exception.DaoGenerateException;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 
 
 /**
@@ -53,17 +53,17 @@ public class JdbcUpdateDefinition extends BaseJdbcDefinition {
 		isReturnId = (method.getAnnotation(ReturnId.class) != null);
 
 		if (isReturnId) {
-			if (EnergyClassUtils.isTypePrimitive(returnType)) {
-				returnType = EnergyClassUtils.primitiveToWrapper(returnType);
+			if (ClassHelper.isTypePrimitive(returnType)) {
+				returnType = ClassHelper.primitiveToWrapper(returnType);
 			}
-			if (!EnergyClassUtils.isTypeNumber(returnType)) {
+			if (!ClassHelper.isTypeNumber(returnType)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@ReturnId注解的方法只能返回java.lang.Number类型数据或者对应的基本类型，你能为[" + returnType + "]");
 			}
 		} else {
-			if (EnergyClassUtils.isTypePrimitive(returnType)) {
-				returnType = EnergyClassUtils.primitiveToWrapper(returnType);
+			if (ClassHelper.isTypePrimitive(returnType)) {
+				returnType = ClassHelper.primitiveToWrapper(returnType);
 			}
-			if (EnergyClassUtils.isTypeVoid(returnType) || Integer.class.equals(returnType)) {
+			if (ClassHelper.isTypeVoid(returnType) || Integer.class.equals(returnType)) {
 				return;
 			}
 

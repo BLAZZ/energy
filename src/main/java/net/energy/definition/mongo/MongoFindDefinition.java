@@ -4,10 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.Unique;
 import net.energy.annotation.mongo.MongoFind;
 import net.energy.annotation.mongo.MongoLimit;
@@ -16,8 +12,13 @@ import net.energy.annotation.mongo.MongoSkip;
 import net.energy.annotation.mongo.MongoSort;
 import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.BeanMapper;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.mongo.impl.AutoDetectBeanMapper;
+import net.energy.utils.ClassHelper;
 import net.sf.cglib.core.ReflectUtils;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -69,14 +70,14 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 			for (Annotation annotation : annotations[index]) {
 				Class<? extends Annotation> annotationType = annotation.annotationType();
 				if (MongoLimit.class.equals(annotationType)) {
-					if (!EnergyClassUtils.isAssignable(paramTypes[index], Integer.class, true)) {
+					if (!ClassHelper.isAssignable(paramTypes[index], Integer.class, true)) {
 						throw new DaoGenerateException("方法[" + method
 								+ "]配置错误：@MongoLimit注解只能配置在int或者java.lang.Integer类型的参数上");
 					}
 					limitIndex = index;
 				}
 				if (MongoSkip.class.equals(annotationType)) {
-					if (!EnergyClassUtils.isAssignable(paramTypes[index], Integer.class, true)) {
+					if (!ClassHelper.isAssignable(paramTypes[index], Integer.class, true)) {
 						throw new DaoGenerateException("方法[" + method
 								+ "]配置错误：@MongoSkip注解只能配置在int或者java.lang.Integer类型的参数上");
 					}
@@ -130,11 +131,25 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	 * @param method
 	 * @throws DaoGenerateException
 	 */
+	@SuppressWarnings("rawtypes")
 	private void configRowMapper(Method method) throws DaoGenerateException {
 		MongoMapper mapper = method.getAnnotation(MongoMapper.class);
-		Class<? extends BeanMapper<?>> mapperType = mapper.value();
+		Class<? extends BeanMapper> mapperType = AutoDetectBeanMapper.class;
+		if (mapper != null) {
+			mapperType = mapper.value();
+		}
 
-		beanMapper = (BeanMapper<?>) ReflectUtils.newInstance(mapperType);
+		if (AutoDetectBeanMapper.class.equals(mapperType)) {
+			Class<?> type = method.getReturnType();
+			if (ClassHelper.isTypeList(type)) {
+				type = ClassHelper.getReturnGenericType(method);
+			}
+
+			beanMapper = (BeanMapper<?>) ReflectUtils.newInstance(mapperType, new Class[] { Class.class }, new Object[] { type });
+		} else {
+
+			beanMapper = (BeanMapper) ReflectUtils.newInstance(mapperType);
+		}
 
 	}
 
@@ -143,27 +158,32 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 		super.checkBeforeParse(method);
 
 		MongoMapper mapper = method.getAnnotation(MongoMapper.class);
-		if (mapper == null) {
-			throw new DaoGenerateException("方法[" + method + "]配置错误：@MongoShell注解必须和@MongoMapper注解一起使用");
+		if (mapper == null
+				&& (ClassHelper.isTypeList(method.getReturnType()) && ClassHelper.getReturnGenericType(method) == null)) {
+			throw new DaoGenerateException("方法[" + method + "]配置错误：返回值必须存在指定泛型类，或者请使用@MongoMapper注解");
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void checkAfterParse(Method method) throws DaoGenerateException {
 		super.checkAfterParse(method);
 
 		MongoMapper mapper = method.getAnnotation(MongoMapper.class);
-		Class<? extends BeanMapper<?>> mapperType = mapper.value();
+		Class<? extends BeanMapper> mapperType = AutoDetectBeanMapper.class;
+		if (mapper != null) {
+			mapperType = mapper.value();
+		}
 
 		Class<?> returnType = method.getReturnType();
-		if (isUnique) {
-			Class<?> expectedType = EnergyClassUtils.getGenericType(mapperType);
-			if (!EnergyClassUtils.isAssignable(returnType, expectedType, true)) {
+		if (isUnique && !AutoDetectBeanMapper.class.equals(mapperType)) {
+			Class<?> expectedType = ClassHelper.getInterfaceGenericType(mapperType);
+			if (!ClassHelper.isAssignable(returnType, expectedType, true)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：方法返回类型[" + returnType.getName()
 						+ "]和@MongoMapper注解中配置的类型[" + expectedType.getName() + "]不一致；或者请去掉@MongoMapper注解");
 			}
 		} else {
-			if (!EnergyClassUtils.isTypeList(returnType)) {
+			if (!ClassHelper.isTypeList(returnType)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：方法返回[java.util.List]类型 ，而实际返回类型["
 						+ returnType.getName() + "]；或者请增加@Unique注解");
 			}
@@ -171,13 +191,14 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	}
 
 	/**
-	 * 解析是否包含@Unique配置
+	 * 解析是否包含@Unique配置，或者返回类型是否为List
 	 * 
 	 * @param method
 	 */
 	private void configUnique(Method method) {
 		Unique unique = method.getAnnotation(Unique.class);
-		if (unique != null) {
+		Class<?> returnType = method.getReturnType();
+		if (unique != null || !ClassHelper.isTypeList(returnType)) {
 			isUnique = true;
 		} else {
 			isUnique = false;
@@ -236,23 +257,23 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 		if (skipIndex != -1) {
 			desc = ",@MongoSkip(" + skipIndex + ")";
 		}
-		
+
 		if (limitIndex != -1) {
 			desc = ",@MongoLimit(" + limitIndex + ")";
 		}
-		
-		if(sortObject != null) {
+
+		if (sortObject != null) {
 			desc = ",@MongoSort(" + sortObject.toString() + ")";
 		}
-		
+
 		if (this.isUnique) {
 			desc = desc + ",@Unique()";
 		}
-		
+
 		if (!StringUtils.isEmpty(globalCollectionName)) {
 			desc = ",@MongoCollection(" + globalCollectionName + ")";
 		}
-		
+
 		return desc;
 	}
 }

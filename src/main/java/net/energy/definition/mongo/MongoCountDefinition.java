@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import net.energy.annotation.mongo.MongoCount;
 import net.energy.exception.DaoGenerateException;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 
 /**
  * 通过对配置了@MongoCount方法的解析， 产生需要在执行Mongo统计操作时必要用到的参数。
@@ -44,8 +44,8 @@ public class MongoCountDefinition extends BaseMongoDefinition {
 	private void checkReturnType(Method method) throws DaoGenerateException {
 		Class<?> returnType = method.getReturnType();
 
-		if (EnergyClassUtils.isTypePrimitive(returnType)) {
-			returnType = EnergyClassUtils.primitiveToWrapper(returnType);
+		if (ClassHelper.isTypePrimitive(returnType)) {
+			returnType = ClassHelper.primitiveToWrapper(returnType);
 		}
 		if (Integer.class.equals(returnType)) {
 			return;

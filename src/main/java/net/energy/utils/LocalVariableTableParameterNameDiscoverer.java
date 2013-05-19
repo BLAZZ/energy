@@ -72,7 +72,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	 * @param clazz
 	 */
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
-		InputStream is = clazz.getResourceAsStream(EnergyClassUtils.getClassFileName(clazz));
+		InputStream is = clazz.getResourceAsStream(ClassHelper.getClassFileName(clazz));
 		if (is == null) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("无法找到[" + clazz + "]的'.class'文件 ，所以无法获取构造方法/方法中的参数名");
@@ -195,7 +195,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 				String className = null;
 				try {
 					className = args[i].getClassName();
-					classes[i] = EnergyClassUtils.getClass(loader, className);
+					classes[i] = ClassHelper.getClass(loader, className);
 				} catch (ClassNotFoundException e) {
 					throw new IllegalArgumentException("找不到类[" + className + "]", e);
 				}

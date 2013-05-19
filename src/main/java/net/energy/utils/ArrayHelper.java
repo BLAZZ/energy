@@ -1,6 +1,7 @@
 package net.energy.utils;
 
 import java.lang.reflect.Array;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -10,7 +11,7 @@ import org.apache.commons.lang.ArrayUtils;
  * @author wuqh
  *
  */
-public class EnergyArrayUtils extends ArrayUtils {
+public class ArrayHelper extends ArrayUtils {
 
 	/**
 	 * 将一个元素放到数组的指定位置上，如果数组不存在将创建数组。如果数组长度不够则会自动补全到index+1的长度。
@@ -38,6 +39,27 @@ public class EnergyArrayUtils extends ArrayUtils {
 			return newArray;
 		}
 	
+	}
+	
+	public static int getArrayOrListLength(Object arrayOrList) {
+		if (arrayOrList == null) {
+			return 0;
+		}
+
+		Class<?> clazz = arrayOrList.getClass();
+		boolean isArray = ClassHelper.isTypeArray(clazz);
+		boolean isList = ClassHelper.isTypeList(clazz);
+		
+		
+		if (!isArray && !isList) {
+			throw new IllegalArgumentException("arrayOrList参数必须为数组或者List的实现类");
+		}
+		
+		if(isArray) {
+			return getLength(arrayOrList);
+		} else {
+			return ((List<?>) arrayOrList).size();
+		}
 	}
 
 }

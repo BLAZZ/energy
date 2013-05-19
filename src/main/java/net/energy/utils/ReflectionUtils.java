@@ -142,7 +142,7 @@ public class ReflectionUtils {
 				return arg.toString();
 			}
 			// 如果Map，执行"."操作就是执行get操作
-			if (EnergyClassUtils.isTypeMap(clazz)) {
+			if (ClassHelper.isTypeMap(clazz)) {
 				Map map = (Map) arg;
 				int pos = paramName.indexOf('.');
 				String prop = paramName.substring(pos + 1);
@@ -250,7 +250,7 @@ public class ReflectionUtils {
 	 * @throws DaoGenerateException
 	 */
 	public static Method findGetterByPropertyName(Class<?> clazz, String prop) throws DaoGenerateException {
-		if (EnergyClassUtils.isTypeMap(clazz)) {
+		if (ClassHelper.isTypeMap(clazz)) {
 			return null;
 		}
 		String name = Character.toUpperCase(prop.charAt(0)) + prop.substring(1);
@@ -292,7 +292,7 @@ public class ReflectionUtils {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static Object[] getGettersAndIndexes(List<String> parameterNames, Map<String, Integer> paramIndexes,
+	public static Object[] getGettersAndIndexes(Method method, List<String> parameterNames, Map<String, Integer> paramIndexes,
 			Map<String, Integer> batchParamIndexes, Class<?>[] paramTypes) throws DaoGenerateException {
 		int length = parameterNames.size();
 		Method[] getters = new Method[length];
@@ -316,10 +316,18 @@ public class ReflectionUtils {
 					index = batchParamIndexes.get(actualName);
 
 					Class<?> paramType = paramTypes[index];
-					if (!paramType.isArray()) {
-						throw new DaoGenerateException("@BatchParam(\"" + paramName + "\")只能用于数组类型的参数上");
+					if (!paramType.isArray() && !ClassHelper.isTypeList(paramType)) {
+						throw new DaoGenerateException("@BatchParam(\"" + paramName + "\")只能用于数组类型或者List实现类的参数上");
 					}
-					componentType = paramTypes[index].getComponentType();
+					if(paramType.isArray()) {
+						componentType = paramTypes[index].getComponentType();
+					} else {
+						componentType = ClassHelper.getParameterGenericType(method, index);
+						if(componentType == null) {
+							throw new DaoGenerateException("@BatchParam(\"" + paramName + "\")只能用于泛型类型清晰的Collection实现类上");
+						}
+					}
+					
 				}
 
 				parameterIndexes[i] = index;
@@ -346,27 +354,37 @@ public class ReflectionUtils {
 	}
 
 	/**
-	 * 提取array[index]的值
+	 * 提取array[index]或者list.get(index)的值
 	 * 
-	 * @param array
+	 * @param arrayOrList
 	 * @param index
 	 * @return
 	 */
-	public static Object fetchArrayValue(Object array, int index) {
-		if (array == null) {
+	public static Object fetchArrayValue(Object arrayOrList, int index) {
+		if (arrayOrList == null) {
 			return null;
 		}
 
-		Class<?> clazz = array.getClass();
-		if (!clazz.isArray()) {
-			throw new IllegalArgumentException("array参数必须为数组");
+		Class<?> clazz = arrayOrList.getClass();
+		boolean isArray = ClassHelper.isTypeArray(clazz);
+		boolean isList = ClassHelper.isTypeList(clazz);
+		
+		
+		if (!isArray && !isList) {
+			throw new IllegalArgumentException("arrayOrList参数必须为数组或者List的实现类");
 		}
-		Class<?> componentType = clazz.getComponentType();
-		if (!componentType.isPrimitive()) {
-			return ((Object[]) array)[index];
-		}
+		
+		if(isArray) {
+			Class<?> componentType = clazz.getComponentType();
+			if (!componentType.isPrimitive()) {
+				return ((Object[]) arrayOrList)[index];
+			}
 
-		return fetchPrimitiveArrayValue(array, index, componentType);
+			return fetchPrimitiveArrayValue(arrayOrList, index, componentType);
+		} else {
+			return ((List<?>) arrayOrList).get(index);
+		}
+		
 	}
 
 	/**
@@ -436,9 +454,9 @@ public class ReflectionUtils {
 		for (int i = 0; i < batchParamIndexes.length; i++) {
 			int index = batchParamIndexes[i];
 			if (batchSize == -1) {
-				batchSize = EnergyArrayUtils.getLength(args[index]);
+				batchSize = ArrayHelper.getArrayOrListLength(args[index]);
 			} else {
-				batchSize = Math.min(batchSize, EnergyArrayUtils.getLength(args[index]));
+				batchSize = Math.min(batchSize, ArrayHelper.getArrayOrListLength(args[index]));
 			}
 		}
 
@@ -449,7 +467,7 @@ public class ReflectionUtils {
 
 		// 每次克隆一组调用参数，然后用批量参数中这个批次中的批量参数值替换这个批量参数
 		for (int i = 0; i < batchSize; i++) {
-			Object[] cloneArgs = EnergyArrayUtils.clone(args);
+			Object[] cloneArgs = ArrayHelper.clone(args);
 
 			for (int j = 0; j < batchParamIndexes.length; j++) {
 				int index = batchParamIndexes[j];

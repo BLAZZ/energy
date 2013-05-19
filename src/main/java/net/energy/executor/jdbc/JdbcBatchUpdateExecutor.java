@@ -12,8 +12,8 @@ import net.energy.exception.DaoGenerateException;
 import net.energy.exception.RetrievalIdException;
 import net.energy.jdbc.JdbcDataAccessor;
 import net.energy.jdbc.KeyHolder;
-import net.energy.utils.EnergyArrayUtils;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ArrayHelper;
+import net.energy.utils.ClassHelper;
 import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.logging.Log;
@@ -105,7 +105,7 @@ public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
 		int length = keys.size();
 		// 将返回结果从List<? extends Numer>转换为数组
 		Class<?> componentType = batchUpdateDefinition.getReturnComponentType();
-		if (!EnergyClassUtils.isTypePrimitive(componentType)) {
+		if (!ClassHelper.isTypePrimitive(componentType)) {
 			Object array = Array.newInstance(componentType, length);
 			System.arraycopy(keys.toArray(), 0, array, 0, length);
 			return array;
@@ -126,35 +126,35 @@ public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
 	private Object formatPrimitiveKeys(List<Number> keys, Class<?> componentType, int length) {
 		if (long.class.equals(componentType)) {
 			Long[] array = keys.toArray(new Long[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (int.class.equals(componentType)) {
 			Integer[] array = keys.toArray(new Integer[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (boolean.class.equals(componentType)) {
 			Boolean[] array = keys.toArray(new Boolean[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (double.class.equals(componentType)) {
 			Double[] array = keys.toArray(new Double[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (char.class.equals(componentType)) {
 			Character[] array = keys.toArray(new Character[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (float.class.equals(componentType)) {
 			Float[] array = keys.toArray(new Float[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (byte.class.equals(componentType)) {
 			Byte[] array = keys.toArray(new Byte[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		if (short.class.equals(componentType)) {
 			Short[] array = keys.toArray(new Short[length]);
-			return EnergyArrayUtils.toPrimitive(array);
+			return ArrayHelper.toPrimitive(array);
 		}
 		throw new RetrievalIdException("无法将返回值转换为类型为[" + componentType + "的数组");
 	}

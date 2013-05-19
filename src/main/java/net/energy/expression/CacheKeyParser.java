@@ -1,8 +1,6 @@
 package net.energy.expression;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.energy.utils.Assert;
@@ -14,15 +12,11 @@ import net.energy.utils.Assert;
  * 
  */
 public class CacheKeyParser extends AbstractExpressionParser {
-	private static final int DEFAULT_CACHE_LIMIT = 256;
 	private final char[] parameterSeparators = new char[] { '-', ':', '&', ',', ';', '"', '\'', '=', '+', };
 
 	private final String[] startSkip = new String[] { "'", "\"", "/*" };
 
 	private final String[] stopSkip = new String[] { "'", "\"", "*/" };
-
-	private static final Map<String, ParsedExpression> PARSEDE_KEY_CACHE = new HashMap<String, ParsedExpression>(
-			DEFAULT_CACHE_LIMIT);
 
 	@Override
 	protected char[] getParameterSeparators() {
@@ -40,12 +34,7 @@ public class CacheKeyParser extends AbstractExpressionParser {
 	}
 
 	public ParsedExpression parse(String key) {
-		ParsedExpression parsedKey = PARSEDE_KEY_CACHE.get(key);
-		if (parsedKey == null) {
-			parsedKey = parseCacheKey(key);
-			PARSEDE_KEY_CACHE.put(key, parsedKey);
-		}
-		return parsedKey;
+		return parseCacheKey(key);
 	}
 
 	private ParsedExpression parseCacheKey(String key) {

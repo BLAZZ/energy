@@ -9,7 +9,7 @@ import net.energy.annotation.ReturnId;
 import net.energy.annotation.jdbc.BatchUpdate;
 import net.energy.definition.BatchDefinition;
 import net.energy.exception.DaoGenerateException;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 
 /**
  * 通过对配置了@BatchUpdate的方法的解析，产生需要在执行JDBC操作时必要用到的参数。
@@ -63,13 +63,13 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 
 		Class<?> returnType = method.getReturnType();
 		if (isReturnId && returnType != null) {
-			if (EnergyClassUtils.isTypeList(returnType)) {
+			if (ClassHelper.isTypeList(returnType)) {
 				isReturnList = true;
-			} else if (!EnergyClassUtils.isTypeArray(returnType)) {
+			} else if (!ClassHelper.isTypeArray(returnType)) {
 				throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@ReturnId注解的方法只能返回数组或者List<? extends Number>类型对象");
 			} else {
 				returnComponentType = returnType.getComponentType();
-				if (!EnergyClassUtils.isAssignable(returnComponentType, Number.class, true)) {
+				if (!ClassHelper.isAssignable(returnComponentType, Number.class, true)) {
 					throw new DaoGenerateException(
 							"方法[" + method + "]配置错误：返回类型只能是基本类型数组或者java.lang.Number类型数组");
 				}

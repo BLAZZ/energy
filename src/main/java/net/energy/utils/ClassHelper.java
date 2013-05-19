@@ -3,6 +3,7 @@ package net.energy.utils;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import org.apache.commons.lang.ClassUtils;
  * @author wuqh
  * 
  */
-public class EnergyClassUtils extends ClassUtils {
+public class ClassHelper extends ClassUtils {
 	private static final String CLASS_FILE_SUFFIX = ".class";
 	private static final Class<?>[] EMPTY_CLASSES = new Class<?>[0];
 
@@ -168,13 +169,50 @@ public class EnergyClassUtils extends ClassUtils {
 	}
 
 	/**
-	 * 获取一个类的第一个泛型类型,例:List&lt;String&gt;=>String
+	 * 获取实现接口的第一个泛型类型,例:如果(MyList implements
+	 * List&lt;String&gt;)，那么getInterfaceGenericType(MyList.class)=>String
 	 * 
 	 * @param clazz
 	 * @return
 	 */
-	public static Class<?> getGenericType(Class<?> clazz) {
+	public static Class<?> getInterfaceGenericType(Class<?> clazz) {
 		Type genericType = clazz.getGenericInterfaces()[0];
+		Class<?>[] classes = getActualClass(genericType);
+		if (classes.length == 0) {
+			return null;
+		} else {
+			return classes[0];
+		}
+	}
+
+	/**
+	 * 获取指定参数的第一个泛型类型,例:如果(void method(Collection&lt;String&gt;
+	 * a)，那么getParameterGenericType(method, 0)=>String
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static Class<?> getParameterGenericType(Method method, int paramIndex) {
+		Type[] paramTypes = method.getGenericParameterTypes();
+		Assert.notNull(paramTypes, "方法必须包含泛型参数");
+		Assert.isTrue(paramIndex < paramTypes.length, "参数索引不能大于参数总数");
+		Type genericType = paramTypes[paramIndex];
+		Class<?>[] classes = getActualClass(genericType);
+		if (classes.length == 0) {
+			return null;
+		} else {
+			return classes[0];
+		}
+	}
+	
+	/**
+	 * 获取返回结果的泛型类型,例:如果(Collection&lt;String&gt; method())，那么getReturnGenericType(method)=>String
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static Class<?> getReturnGenericType(Method method) {
+		Type genericType = method.getGenericReturnType();
 		Class<?>[] classes = getActualClass(genericType);
 		if (classes.length == 0) {
 			return null;
@@ -190,7 +228,7 @@ public class EnergyClassUtils extends ClassUtils {
 	 */
 	public static ClassLoader getClassLoader() {
 		ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
-		ClassLoader loader = contextCL == null ? EnergyClassUtils.class.getClassLoader() : contextCL;
+		ClassLoader loader = contextCL == null ? ClassHelper.class.getClassLoader() : contextCL;
 		return loader;
 	}
 

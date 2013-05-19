@@ -11,7 +11,7 @@ import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
 import net.energy.expression.ParserFacotory;
 import net.energy.expression.ParserFacotory.ExpressionType;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 import net.energy.utils.ReflectionUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -117,7 +117,7 @@ public class CacheDefinition extends BaseCacheDefinition {
 
 		Class<?> returnType = method.getReturnType();
 
-		if (EnergyClassUtils.isTypeCollection(returnType)) {
+		if (ClassHelper.isTypeCollection(returnType)) {
 			// 集合类的版本号和普通的key生成类似，以父类实现为准为准
 			return super.getGettersAndIndexes(method, vkeyParameterNames, paramIndexes, batchParamIndexes);
 		} else {
@@ -141,7 +141,7 @@ public class CacheDefinition extends BaseCacheDefinition {
 		super.checkAfterParse(method);
 
 		Class<?> returnType = method.getReturnType();
-		isReturnCollection = EnergyClassUtils.isTypeCollection(returnType);
+		isReturnCollection = ClassHelper.isTypeCollection(returnType);
 		if (isReturnCollection && StringUtils.isEmpty(vkey)) {
 			throw new DaoGenerateException("方法[" + method + "]配置错误： 对于返回集合类型的方法，@Cache注解中必须包含");
 		}

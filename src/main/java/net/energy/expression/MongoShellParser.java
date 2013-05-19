@@ -1,8 +1,6 @@
 package net.energy.expression;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import net.energy.utils.Assert;
@@ -14,15 +12,11 @@ import net.energy.utils.Assert;
  *
  */
 public class MongoShellParser extends AbstractExpressionParser {
-	private static final int DEFAULT_CACHE_LIMIT = 128;
 	private final char[] parameterSeparators = new char[] { '{', '}', ':', '&', ',', ';', '"', '\'', '[', ']' };
 
 	private final String[] startSkip = new String[] { "/*" };
 
 	private final String[] stopSkip = new String[] { "*/" };
-
-	private static final Map<String, ParsedExpression> PARSEDE_SHELL_CACHE = new HashMap<String, ParsedExpression>(
-			DEFAULT_CACHE_LIMIT);
 
 	@Override
 	protected char[] getParameterSeparators() {
@@ -40,12 +34,7 @@ public class MongoShellParser extends AbstractExpressionParser {
 	}
 
 	public ParsedExpression parse(String shell) {
-		ParsedExpression parsedShell = PARSEDE_SHELL_CACHE.get(shell);
-		if (parsedShell == null) {
-			parsedShell = parseShell(shell);
-			PARSEDE_SHELL_CACHE.put(shell, parsedShell);
-		}
-		return parsedShell;
+		return parseShell(shell);
 	}
 
 	private ParsedExpression parseShell(String shell) {

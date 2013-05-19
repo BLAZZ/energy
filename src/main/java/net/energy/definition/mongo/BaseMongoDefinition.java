@@ -11,7 +11,7 @@ import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
 import net.energy.expression.ParserFacotory;
 import net.energy.expression.ParserFacotory.ExpressionType;
-import net.energy.utils.EnergyClassUtils;
+import net.energy.utils.ClassHelper;
 import net.energy.utils.ExpressionUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -59,7 +59,7 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 			for (Annotation annotation : annotations[index]) {
 				Class<? extends Annotation> annotationType = annotation.annotationType();
 				if (MongoCollection.class.equals(annotationType)) {
-					if (net.energy.utils.EnergyClassUtils.isTypeString(paramTypes[index])) {
+					if (net.energy.utils.ClassHelper.isTypeString(paramTypes[index])) {
 						collectionIndex = index;
 					}
 				}
@@ -106,10 +106,10 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 	protected void checkUpsetReturnType(Method method, String annotationName) throws DaoGenerateException {
 		Class<?> returnType = method.getReturnType();
 
-		if (net.energy.utils.EnergyClassUtils.isTypePrimitive(returnType)) {
-			returnType = EnergyClassUtils.primitiveToWrapper(returnType);
+		if (net.energy.utils.ClassHelper.isTypePrimitive(returnType)) {
+			returnType = ClassHelper.primitiveToWrapper(returnType);
 		}
-		if (net.energy.utils.EnergyClassUtils.isTypeVoid(returnType) || Boolean.class.equals(returnType)) {
+		if (net.energy.utils.ClassHelper.isTypeVoid(returnType) || Boolean.class.equals(returnType)) {
 			return;
 		}
 
