@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.energy.exception.TaskNotReturnException;
 import net.energy.utils.Assert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 任务仓库，存放所有的任务队列
@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 public class TaskRepository {
 	private static final Map<TaskParameters, List<TaskDoneListener>> tasks = new ConcurrentHashMap<TaskParameters, List<TaskDoneListener>>();
 
-	private static final Log LOGGER = LogFactory.getLog(TaskRepository.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TaskRepository.class);
 
 	/**
 	 * 根据任务参数集，将任务增加到其应当在的那个队列中
@@ -54,7 +54,9 @@ public class TaskRepository {
 		TaskResult<T> result = null;
 
 		if (isFirst) {
-			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程是任务队列的第一个任务，将会被执行");
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程是任务队列的第一个任务，将会被执行");
+			}
 			result = task.process(taskParameters);
 			List<TaskDoneListener> currentListeners = getTaskDoneListeners(taskParameters);
 
@@ -68,7 +70,9 @@ public class TaskRepository {
 			}
 
 		} else {
-			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程不是任务队列的第一个任务，开始等待一个任务处理结果");
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程不是任务队列的第一个任务，开始等待一个任务处理结果");
+			}
 			try {
 				synchronized (task) {
 					if (timeout > 0) {
@@ -113,7 +117,9 @@ public class TaskRepository {
 	 * @param taskParameters
 	 */
 	private static void clearListeners(TaskParameters taskParameters) {
-		LOGGER.debug("Thread" + Thread.currentThread().getId() + ":清空任务队列");
+		if(LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":清空任务队列");
+		}
 		tasks.remove(taskParameters);
 	}
 

@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=java_memcached-release_2.6.6.jar -DgroupId=com.danga -DartifactId=memcached -Dversion=2.6.6 -Dpackaging=jar

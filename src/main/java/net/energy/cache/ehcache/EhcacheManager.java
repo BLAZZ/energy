@@ -13,8 +13,8 @@ import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Ehcache的管理类，用于获取Cache对象，一般采用ehcache.xml配置，如果没有找到配置，则将采用如下配置
@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EhcacheManager extends MultiLevelCacheManager implements CacheManager {
 	private static final String CLASSPATH_PREFIX = "classpath:";
-	private static final Log LOGGER = LogFactory.getLog(EhcacheManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EhcacheManager.class);
 	net.sf.ehcache.CacheManager cacheManager;
 
 	private int maxElementsInMemory = 10000;

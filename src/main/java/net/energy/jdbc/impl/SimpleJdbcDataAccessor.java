@@ -17,8 +17,8 @@ import net.energy.jdbc.RowMapper;
 import net.energy.utils.JdbcUtils;
 import net.energy.utils.Page;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JdbcDataAccessor的默认实现
@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
-	private static final Log LOGGER = LogFactory.getLog(SimpleJdbcDataAccessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleJdbcDataAccessor.class);
 
 	private DataSource dataSource;
 	private Dialect dialect;

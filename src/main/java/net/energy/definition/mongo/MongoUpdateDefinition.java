@@ -4,10 +4,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.mongo.MongoUpdate;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
@@ -17,6 +13,10 @@ import net.energy.expression.ParserFacotory.ExpressionType;
 import net.energy.utils.ExpressionUtils;
 import net.energy.utils.ReflectionUtils;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 通过对配置了@MongoUpdate方法的解析， 产生需要在执行Mongo更新操作时必要用到的参数。
  * 
@@ -24,7 +24,7 @@ import net.energy.utils.ReflectionUtils;
  * 
  */
 public class MongoUpdateDefinition extends BaseMongoDefinition {
-	private static final Log LOGGER = LogFactory.getLog(MongoUpdateDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoUpdateDefinition.class);
 	private ParsedExpression parsedModifierShell;
 	private String modifierShellWithToken;
 	private Method[] modifierGetterMethods;

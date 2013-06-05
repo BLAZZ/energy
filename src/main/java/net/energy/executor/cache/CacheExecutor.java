@@ -18,8 +18,8 @@ import net.energy.executor.DataAccessExecutor;
 import net.energy.utils.Page;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 缓存的访问操作调用器
@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * @see CacheDefinitionCollection
  */
 public class CacheExecutor implements DataAccessExecutor {
-	private static final Log LOGGER = LogFactory.getLog(CacheExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CacheExecutor.class);
 	private CacheDefinitionCollection cacheDefinitionCollection;
 	private final CacheManager cacheManager;
 	private DataAccessExecutor dataAccessExecutor;
@@ -107,7 +107,9 @@ public class CacheExecutor implements DataAccessExecutor {
 
 		// 获取当前缓存的对象
 		CacheObject oldItem = (CacheObject) cache.get(key);
-		LOGGER.debug("从缓存中获取Key值[" + key + "]的对象[" + oldItem + "]");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("从缓存中获取Key值[" + key + "]的对象[" + oldItem + "]");
+		}
 
 		// 比较缓存版本，看缓存是否有效
 		if (oldItem != null) {
@@ -153,7 +155,9 @@ public class CacheExecutor implements DataAccessExecutor {
 			LOGGER.debug("无法生成更新版本信息的缓存Key,获取缓存失败");
 			return cacheResult;
 		}
-		LOGGER.debug("生成版本信息的缓存Key[" + versionKey + "]");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("生成版本信息的缓存Key[" + versionKey + "]");
+		}
 		cacheResult.setVersionKey(versionKey);
 
 		Cache cache = cacheResult.getCache();
@@ -165,7 +169,9 @@ public class CacheExecutor implements DataAccessExecutor {
 		if (currentVersion != 0 && currentVersion == itemVersion) {
 			return processCacheHit(cacheResult, cachedItem, args);
 		} else {
-			LOGGER.debug("当前版本为[" + currentVersion + "],缓存对象版本号为[" + itemVersion + "],Cache没有命中,直接调用DAO方法");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("当前版本为[" + currentVersion + "],缓存对象版本号为[" + itemVersion + "],Cache没有命中,直接调用DAO方法");
+			}
 			return cacheResult;
 		}
 	}
@@ -179,7 +185,9 @@ public class CacheExecutor implements DataAccessExecutor {
 	 */
 	private long getCurrentVersion(Cache cache, String versionKey) {
 		Long cachedVersion = (Long) cache.get(versionKey);
-		LOGGER.debug("获取Key值为[" + versionKey + "]版本信息,版本号[" + cachedVersion + "]");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("获取Key值为[" + versionKey + "]版本信息,版本号[" + cachedVersion + "]");
+		}
 		long currentVersion = 0;
 		if (cachedVersion != null) {
 			currentVersion = cachedVersion;
@@ -210,7 +218,9 @@ public class CacheExecutor implements DataAccessExecutor {
 			// 如果分页对象为空，表示此分页被复用与不分页的情况了，需要加以区分
 			if (page != null) {
 				String pageKey = cacheDefinition.generatePageKey(args, key);
-				LOGGER.debug("缓存为需要分页的缓存，页码[" + page.getCurpage() + "],对应的分页缓存Key为[" + pageKey + "]");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("缓存为需要分页的缓存，页码[" + page.getCurpage() + "],对应的分页缓存Key为[" + pageKey + "]");
+				}
 				Page cachePage = (Page) cache.get(pageKey);
 				// 如果取不到分页数据，需要当做未命中处理
 				if (cachePage == null) {
@@ -253,7 +263,9 @@ public class CacheExecutor implements DataAccessExecutor {
 		// 缓存查询结果
 		CacheObject newItem = new CacheObject((Serializable) exeResult, currentVersion);
 		cache.add(key, newItem, expire);
-		LOGGER.debug("缓存对象到[" + key + "],缓存时间[" + expire + "]毫秒");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("缓存对象到[" + key + "],缓存时间[" + expire + "]毫秒");
+		}
 		// 如果是分页查询还需要缓存分页相关信息
 		if (cacheDefinition.isReturnCollection()) {
 			Page page = cacheDefinition.getPageArgument(args);
@@ -266,8 +278,10 @@ public class CacheExecutor implements DataAccessExecutor {
 				}
 				if (!StringUtils.isEmpty(pageKey)) {
 					cache.add(pageKey, page, expire);
-					LOGGER.debug("缓存为需要分页的缓存,页码[" + page.getCurpage() + "],缓存分页对象到[" + pageKey + "], 缓存时间[" + expire
-							+ "]毫秒");
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("缓存为需要分页的缓存,页码[" + page.getCurpage() + "],缓存分页对象到[" + pageKey + "], 缓存时间["
+								+ expire + "]毫秒");
+					}
 				}
 			}
 		}
@@ -299,8 +313,10 @@ public class CacheExecutor implements DataAccessExecutor {
 				Cache cache = cacheManager.getCache(definition.getPool());
 				long expire = definition.getExpire();
 				cache.add(versionKey, currentVersion, expire);
-				LOGGER.debug("更新版本信息,版本Key值[" + versionKey + "],版本号[" + currentVersion + "], 版本信息缓存时间[" + expire
-						+ "]毫秒");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("更新版本信息,版本Key值[" + versionKey + "],版本号[" + currentVersion + "], 版本信息缓存时间[" + expire
+							+ "]毫秒");
+				}
 			}
 		}
 	}
@@ -323,7 +339,9 @@ public class CacheExecutor implements DataAccessExecutor {
 			String key = definition.generateCacheKey(args);
 			Cache cache = cacheManager.getCache(definition.getPool());
 			cache.delete(key);
-			LOGGER.debug("删除Key为[" + key + "]的缓存");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("删除Key为[" + key + "]的缓存");
+			}
 		}
 	}
 
@@ -362,7 +380,9 @@ public class CacheExecutor implements DataAccessExecutor {
 					LOGGER.info("无法生成更新版本信息的缓存Key,缓存版本信息失败");
 					return cacheResult;
 				}
-				LOGGER.debug("第一次查询缓存，需要生成版本信息,版本信息缓存的Key[" + versionKey + "]");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("第一次查询缓存，需要生成版本信息,版本信息缓存的Key[" + versionKey + "]");
+				}
 				// 由于第一次查询无法得知版本信息，所以在知道版本key后需要再查一次版本信息。
 				cachedCurrentVersion = (Long) cache.get(versionKey);
 
@@ -376,8 +396,10 @@ public class CacheExecutor implements DataAccessExecutor {
 				long expire = cacheDefinition.getExpire();
 				cache.add(versionKey, currentVersion, expire);
 
-				LOGGER.debug("更新版本信息，版本Key值[" + versionKey + "],版本号[" + currentVersion + "], 版本信息缓存时间[" + expire
-						+ "]毫秒");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("更新版本信息，版本Key值[" + versionKey + "],版本号[" + currentVersion + "], 版本信息缓存时间[" + expire
+							+ "]毫秒");
+				}
 				cacheResult.setCurrentVersion(currentVersion);
 			} else {
 				// 如果versionKey为空，说明缓存不需要关联版本信息，直接以当前时间作为缓存版本的版本号

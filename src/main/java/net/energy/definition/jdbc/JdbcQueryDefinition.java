@@ -12,8 +12,8 @@ import net.energy.jdbc.impl.AutoDetectRowMapper;
 import net.energy.utils.ClassHelper;
 import net.sf.cglib.core.ReflectUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通过对配置了@Query的方法的解析，产生需要在执行JDBC操作时必要用到的参数。
@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class JdbcQueryDefinition extends BaseJdbcDefinition {
-	private static final Log LOGGER = LogFactory.getLog(JdbcQueryDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcQueryDefinition.class);
 	private int fetchSize;
 	private boolean isUnique = false;
 	private RowMapper<?> rowMapper;

@@ -9,8 +9,8 @@ import java.util.Map;
 import net.energy.jdbc.KeyHolder;
 import net.energy.utils.JdbcUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 增删改类SQL调用方法
@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * @param <T>
  */
 class UpdateCallback implements PreparedStatementCallback<Integer> {
-	private static final Log LOGGER = LogFactory.getLog(UpdateCallback.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCallback.class);
 
 	private final KeyHolder generatedKeyHolder;
 

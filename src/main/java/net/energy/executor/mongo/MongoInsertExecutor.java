@@ -9,8 +9,8 @@ import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mongo插入操作调用方法
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class MongoInsertExecutor extends AbstractMongoExecutor {
-	private static final Log LOGGER = LogFactory.getLog(MongoInsertExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoInsertExecutor.class);
 	private MongoInsertDefinition definition;
 	
 	public MongoInsertExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {

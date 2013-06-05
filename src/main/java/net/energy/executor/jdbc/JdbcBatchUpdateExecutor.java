@@ -16,8 +16,8 @@ import net.energy.utils.ArrayHelper;
 import net.energy.utils.ClassHelper;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JDBC的批量增删改操作调用方法
@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
-	private static final Log LOGGER = LogFactory.getLog(JdbcBatchUpdateExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcBatchUpdateExecutor.class);
 	private JdbcBatchUpdateDefinition definition;
 
 	public JdbcBatchUpdateExecutor(JdbcDataAccessor dataAccessor, Method method) throws DaoGenerateException {

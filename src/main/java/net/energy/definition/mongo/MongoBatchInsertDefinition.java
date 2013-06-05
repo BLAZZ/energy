@@ -7,8 +7,8 @@ import net.energy.definition.BatchDefinition;
 import net.energy.exception.DaoGenerateException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通过对配置了@MongoBatchInsert方法的解析， 产生需要在执行Mongo批量插入操作时必要用到的参数。
@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class MongoBatchInsertDefinition extends BaseMongoDefinition implements BatchDefinition {
-	private static final Log LOGGER = LogFactory.getLog(MongoBatchInsertDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoBatchInsertDefinition.class);
 
 	public MongoBatchInsertDefinition(Method method) throws DaoGenerateException {
 		super(method);

@@ -10,8 +10,8 @@ import net.energy.mongo.MongoShell;
 import net.energy.mongo.MongoUpdate;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mongo更新操作调用方法
@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class MongoUpdateExecutor extends AbstractMongoExecutor {
-	private static final Log LOGGER = LogFactory.getLog(MongoUpdateExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoUpdateExecutor.class);
 	private MongoUpdateDefinition definition;
 
 	public MongoUpdateExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {

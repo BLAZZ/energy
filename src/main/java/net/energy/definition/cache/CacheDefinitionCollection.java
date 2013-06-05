@@ -4,15 +4,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.cache.Cache;
 import net.energy.annotation.cache.CacheDelete;
 import net.energy.annotation.cache.CacheUpdate;
 import net.energy.annotation.cache.VerUpdate;
 import net.energy.exception.DaoGenerateException;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 单个方法中所有Cache相关的配置。 由于{@link CacheUpdate}等更新、操作集的存在。其实一次方法的执行会包含： 1、一个缓存查询；
@@ -22,7 +22,7 @@ import net.energy.exception.DaoGenerateException;
  * 
  */
 public class CacheDefinitionCollection {
-	private static final Log LOGGER = LogFactory.getLog(CacheDefinitionCollection.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CacheDefinitionCollection.class);
 	private CacheDefinition cacheDefinition = null;
 	private List<CacheDeleteDefinition> cacheDeleteDefinitions = null;
 	private List<VersionUpdateDefinition> versionUpdateDefinitions = null;

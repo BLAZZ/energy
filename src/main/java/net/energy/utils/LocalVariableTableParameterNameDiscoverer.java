@@ -9,14 +9,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ParameterNameDiscoverer}
@@ -29,7 +28,7 @@ import org.objectweb.asm.Type;
  */
 public class LocalVariableTableParameterNameDiscoverer implements ParameterNameDiscoverer {
 
-	private static Log LOGGER = LogFactory.getLog(LocalVariableTableParameterNameDiscoverer.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(LocalVariableTableParameterNameDiscoverer.class);
 
 	// 用于标记没有DEBUG信息（DEBUG和CODE信息）的类文件
 	private static final Map<Member, String[]> NO_DEBUG_INFO_MAP = Collections.emptyMap();

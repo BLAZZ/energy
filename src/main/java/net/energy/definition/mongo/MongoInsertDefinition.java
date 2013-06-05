@@ -2,12 +2,12 @@ package net.energy.definition.mongo;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.mongo.MongoInsert;
 import net.energy.exception.DaoGenerateException;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通过对配置了@MongoInsert方法的解析， 产生需要在执行Mongo插入操作时必要用到的参数。
@@ -16,7 +16,7 @@ import net.energy.exception.DaoGenerateException;
  * 
  */
 public class MongoInsertDefinition extends BaseMongoDefinition {
-	private static final Log LOGGER = LogFactory.getLog(MongoInsertDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoInsertDefinition.class);
 	
 	public MongoInsertDefinition(Method method) throws DaoGenerateException {
 		super(method);

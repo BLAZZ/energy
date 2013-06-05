@@ -2,13 +2,13 @@ package net.energy.definition.jdbc;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.ReturnId;
 import net.energy.annotation.jdbc.Update;
 import net.energy.exception.DaoGenerateException;
 import net.energy.utils.ClassHelper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -18,7 +18,7 @@ import net.energy.utils.ClassHelper;
  * 
  */
 public class JdbcUpdateDefinition extends BaseJdbcDefinition {
-	private static final Log LOGGER = LogFactory.getLog(JdbcUpdateDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcUpdateDefinition.class);
 	private boolean isReturnId = false;
 
 	public boolean isReturnId() {

@@ -2,13 +2,13 @@ package net.energy.definition.mongo;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.mongo.MongoCount;
 import net.energy.exception.DaoGenerateException;
 import net.energy.utils.ClassHelper;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通过对配置了@MongoCount方法的解析， 产生需要在执行Mongo统计操作时必要用到的参数。
@@ -17,7 +17,7 @@ import net.energy.utils.ClassHelper;
  * 
  */
 public class MongoCountDefinition extends BaseMongoDefinition {
-	private static final Log LOGGER = LogFactory.getLog(MongoCountDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoCountDefinition.class);
 	
 	public MongoCountDefinition(Method method) throws DaoGenerateException {
 		super(method);

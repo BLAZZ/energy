@@ -15,7 +15,6 @@ import net.energy.queue.TaskRepository;
  * 
  */
 public class QueuedJdbcDataAccessor extends SimpleJdbcDataAccessor implements JdbcDataAccessor {
-	//private static final Log LOGGER = LogFactory.getLog(QueuedJdbcDataAccessor.class);
 	private SimpleJdbcDataAccessor dataAccessor = new SimpleJdbcDataAccessor();
 	
 	private long timeout = 0L;

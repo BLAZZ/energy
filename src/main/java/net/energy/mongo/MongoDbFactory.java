@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import net.energy.exception.DataAccessException;
 import net.energy.utils.MongoDbUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
@@ -20,7 +20,7 @@ import com.mongodb.MongoException;
  *
  */
 public class MongoDbFactory {
-	private static final Log LOGGER = LogFactory.getLog(MongoDbFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbFactory.class);
 	private String host;
 	private Integer port;
 	private String username;

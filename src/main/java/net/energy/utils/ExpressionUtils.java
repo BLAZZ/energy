@@ -4,9 +4,6 @@ import java.util.List;
 
 import net.energy.expression.ParsedExpression;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * 表达式工具类
  * 
@@ -14,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public final class ExpressionUtils {
-	static final Log LOGGER = LogFactory.getLog(ExpressionUtils.class);
 	public static final String SHELL_TOKEN = "#";
 	private static final String SQL_TOKEN = "?";
 	

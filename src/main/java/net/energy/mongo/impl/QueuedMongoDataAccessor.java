@@ -18,8 +18,6 @@ import com.mongodb.DBObject;
  * 
  */
 public class QueuedMongoDataAccessor extends SimpleMongoDataAccessor implements MongoDataAccessor {
-	// private static final Log LOGGER =
-	// LogFactory.getLog(QueuedMongoDataAccessor.class);
 	private SimpleMongoDataAccessor dataAccessor = new SimpleMongoDataAccessor();
 	
 	private long timeout = 0L;

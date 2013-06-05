@@ -9,8 +9,8 @@ import net.energy.mongo.MongoDataAccessor;
 import net.energy.mongo.MongoShell;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mongo删除操作调用方法
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class MongoRemoveExecutor extends AbstractMongoExecutor {
-	private static final Log LOGGER = LogFactory.getLog(MongoRemoveExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoRemoveExecutor.class);
 	private MongoRemoveDefinition definition;
 
 	public MongoRemoveExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {

@@ -8,8 +8,8 @@ import net.energy.exception.DaoGenerateException;
 import net.energy.mongo.MongoDataAccessor;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mongo批量操作调用方法
@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class MongoBatchInsertExecutor extends AbstractMongoExecutor {
-	private static final Log LOGGER = LogFactory.getLog(MongoBatchInsertExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoBatchInsertExecutor.class);
 	private MongoBatchInsertDefinition definition;
 	
 	public MongoBatchInsertExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {

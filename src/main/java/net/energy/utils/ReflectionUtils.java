@@ -8,8 +8,8 @@ import java.util.Map;
 import net.energy.definition.BatchDefinition;
 import net.energy.exception.DaoGenerateException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 反射及相关操作工具类
@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class ReflectionUtils {
-	static final Log LOGGER = LogFactory.getLog(ReflectionUtils.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
 
 	/**
 	 * 查找指定类中的所有方法（包括父类和接口中的方法），并使用方法回调接口对这些方法进行处理。

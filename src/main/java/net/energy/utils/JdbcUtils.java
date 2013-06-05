@@ -17,8 +17,8 @@ import javax.sql.DataSource;
 
 import net.energy.exception.JdbcDataAccessException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JDBC操作工具类
@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class JdbcUtils {
-	private static final Log LOGGER = LogFactory.getLog(JdbcUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcUtils.class);
 
 	/**
 	 * 从DataSource中获取JDBC Connection

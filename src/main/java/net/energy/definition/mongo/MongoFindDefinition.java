@@ -17,8 +17,8 @@ import net.energy.utils.ClassHelper;
 import net.sf.cglib.core.ReflectUtils;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -30,7 +30,7 @@ import com.mongodb.util.JSON;
  * 
  */
 public class MongoFindDefinition extends BaseMongoDefinition {
-	private static final Log LOGGER = LogFactory.getLog(MongoFindDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoFindDefinition.class);
 	private BeanMapper<?> beanMapper;
 	private boolean isUnique;
 	private Integer skip;

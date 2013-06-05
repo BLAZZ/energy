@@ -16,8 +16,8 @@ import net.energy.utils.ClassHelper;
 import net.energy.utils.Page;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DAO方法定义基础类，用于存@Param，@BatchParam，@GenericTable等公共信息
@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public abstract class AbstractDefintion {
-	private static final Log LOGGER = LogFactory.getLog(AbstractDefintion.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDefintion.class);
 
 	/**
 	 * 系统保留关键字，用于指代方法执行的结果（用于单个对象缓存时生成versionKey）

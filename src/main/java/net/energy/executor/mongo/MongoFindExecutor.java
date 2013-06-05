@@ -11,8 +11,8 @@ import net.energy.mongo.MongoQuery;
 import net.energy.utils.Page;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mongodb.DBObject;
 
@@ -23,7 +23,7 @@ import com.mongodb.DBObject;
  * 
  */
 public class MongoFindExecutor extends AbstractMongoExecutor {
-	private static final Log LOGGER = LogFactory.getLog(MongoFindExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongoFindExecutor.class);
 	private MongoFindDefinition definition;
 
 	public MongoFindExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {

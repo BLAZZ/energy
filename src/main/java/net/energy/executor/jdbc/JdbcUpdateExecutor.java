@@ -9,8 +9,8 @@ import net.energy.jdbc.JdbcDataAccessor;
 import net.energy.jdbc.KeyHolder;
 import net.energy.utils.ReflectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JDBC的增删改操作调用方法
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class JdbcUpdateExecutor extends AbstractJdbcExecutor {
-	private static final Log LOGGER = LogFactory.getLog(JdbcUpdateExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcUpdateExecutor.class);
 	private JdbcUpdateDefinition definition;
 
 	public JdbcUpdateExecutor(JdbcDataAccessor dataAccessor, Method method) throws DaoGenerateException {

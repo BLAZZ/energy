@@ -2,14 +2,14 @@ package net.energy.definition.jdbc;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.energy.annotation.ReturnId;
 import net.energy.annotation.jdbc.BatchUpdate;
 import net.energy.definition.BatchDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.utils.ClassHelper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通过对配置了@BatchUpdate的方法的解析，产生需要在执行JDBC操作时必要用到的参数。
@@ -18,7 +18,7 @@ import net.energy.utils.ClassHelper;
  * 
  */
 public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements BatchDefinition {
-	private static final Log LOGGER = LogFactory.getLog(JdbcBatchUpdateDefinition.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JdbcBatchUpdateDefinition.class);
 	private boolean isReturnId = false;
 	private boolean isReturnList = false;
 	private Class<?> returnComponentType;
