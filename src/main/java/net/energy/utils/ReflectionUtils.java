@@ -481,15 +481,4 @@ public class ReflectionUtils {
 		return paramArrays;
 	}
 
-	public static ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
-
-	/**
-	 * 设置系统参数名解析器，默认为{@link LocalVariableTableParameterNameDiscoverer}
-	 * 
-	 * @param parameterNameDiscoverer
-	 */
-	public static void setParameterNameDiscoverer(LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer) {
-		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer;
-	}
-
 }

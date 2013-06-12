@@ -157,11 +157,7 @@ public abstract class AbstractDefintion {
 			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes)
 			throws DaoGenerateException {
 		
-		String[] paramNames = ReflectionUtils.PARAMETER_NAME_DISCOVERER.getParameterNames(method);
-		
 		for (int index = 0; index < annotations.length; index++) {
-			boolean initParamName = true;
-			boolean initBatchParamName = true;
 
 			for (Annotation annotation : annotations[index]) {
 				
@@ -176,7 +172,6 @@ public abstract class AbstractDefintion {
 					}
 
 					addParam(value, index, paramIndexes);
-					initParamName = false;
 				}
 				if (BatchParam.class.equals(annotationType) && batchParamIndexMap != null) {
 					BatchParam param = (BatchParam) annotation;
@@ -187,7 +182,6 @@ public abstract class AbstractDefintion {
 					}
 
 					addBatchParam(value, index, batchParamIndexMap);
-					initBatchParamName = false;
 
 				}
 				if (GenericTable.class.equals(annotationType)) {
@@ -198,24 +192,7 @@ public abstract class AbstractDefintion {
 				}
 			}
 			
-			if (paramNames == null || !initParamName || !initBatchParamName) {
-				continue;
-			}
-			
-			String paramName = paramNames[index];
-			if (RESULT_PARAM_VALUE.equals(paramName)) {
-				throw new DaoGenerateException("方法[" + method + "]配置错误：方法的参数名称不能使用保留关键字\"" + RESULT_PARAM_VALUE + "\"");
-			}
-			
 			Class<?> type = paramTypes[index];
-
-			if (ClassHelper.isTypeArray(type) || ClassHelper.isTypeList(type)) {
-				if(initBatchParamName) {
-					addBatchParam(paramName, index, batchParamIndexMap);
-				}
-			} else if(initParamName) {
-				addParam(paramName, index, paramIndexes);
-			}
 
 			if (ClassHelper.isTypePage(type) && pageIndex == -1) {
 				pageIndex = index;
