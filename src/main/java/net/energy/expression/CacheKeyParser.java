@@ -45,8 +45,8 @@ public class CacheKeyParser extends AbstractExpressionParser {
 
 		char[] keyChars = key.toCharArray();
 		int namedParameterCount = 0;
-		int unnamedParameterCount = 0;
-		int totalParameterCount = 0;
+		// int unnamedParameterCount = 0;
+		// int totalParameterCount = 0;
 
 		int i = 0;
 		while (i < keyChars.length) {
@@ -63,24 +63,24 @@ public class CacheKeyParser extends AbstractExpressionParser {
 			if (c == ':') {
 				int j = i + 1;
 				// 如果有连续多个“:”，只有最后一个才会作为参数的起始符
-				if (j < keyChars.length && keyChars[j] == ':' && c == ':') {
+				if (j < keyChars.length && keyChars[j] == ':') {
 					i++;
 					continue;
 				}
-				j = endIndexOfParameter(keyChars, i, j);
+				j = endIndexOfParameter(keyChars, j);
 				if (j - i > 1) {
 					String parameter = key.substring(i + 1, j);
 					namedParameterCount = addNamedParameter(namedParameters, parameter, namedParameterCount);
 					parsedKey.addNamedParameter(parameter, i, j);
-					totalParameterCount++;
+					// totalParameterCount++;
 				}
 				i = j - 1;
 			}
 			i++;
 		}
-		parsedKey.setNamedParameterCount(namedParameterCount);
-		parsedKey.setUnnamedParameterCount(unnamedParameterCount);
-		parsedKey.setTotalParameterCount(totalParameterCount);
+		// parsedKey.setNamedParameterCount(namedParameterCount);
+		// parsedKey.setUnnamedParameterCount(unnamedParameterCount);
+		// parsedKey.setTotalParameterCount(totalParameterCount);
 		return parsedKey;
 	}
 }

@@ -13,12 +13,10 @@ import net.energy.jdbc.JdbcDataAccessor;
  *
  */
 public abstract class AbstractJdbcExecutor implements DataAccessExecutor {
-	protected final JdbcDataAccessor dataAccessor;
-	protected final Method method;
+	final JdbcDataAccessor dataAccessor;
 
-	public AbstractJdbcExecutor(JdbcDataAccessor dataAccessor, Method method) throws DaoGenerateException {
+	AbstractJdbcExecutor(JdbcDataAccessor dataAccessor, Method method) throws DaoGenerateException {
 		this.dataAccessor = dataAccessor;
-		this.method = method;
 		initDefinition(method);
 	}
 	

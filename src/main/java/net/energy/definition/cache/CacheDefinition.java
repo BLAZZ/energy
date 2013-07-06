@@ -9,8 +9,8 @@ import net.energy.annotation.cache.Cache;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
-import net.energy.expression.ParserFacotory;
-import net.energy.expression.ParserFacotory.ExpressionType;
+import net.energy.expression.ParserFactory;
+import net.energy.expression.ParserFactory.ExpressionType;
 import net.energy.utils.ClassHelper;
 import net.energy.utils.ReflectionUtils;
 
@@ -51,19 +51,19 @@ public class CacheDefinition extends BaseCacheDefinition {
 	/**
 	 * 缓存的pool
 	 */
-	private String pool;
+	private final String pool;
 	/**
 	 * 原始的key值
 	 */
-	private String key;
+	private final String key;
 	/**
 	 * 原始的vkey值
 	 */
-	private String vkey;
+	private final String vkey;
 	/**
 	 * 缓存、版本缓存最大生存时间，单位：毫秒
 	 */
-	private long expire;
+	private final long expire;
 
 	/**
 	 * 返回类型是否为集合
@@ -81,7 +81,7 @@ public class CacheDefinition extends BaseCacheDefinition {
 	}
 
 	@Override
-	protected String getSourceKey(Method method) {
+	protected String getSourceKey() {
 		return key;
 	}
 
@@ -92,7 +92,7 @@ public class CacheDefinition extends BaseCacheDefinition {
 
 		// 解析Vkey的相关表达式级参数信息
 		if (StringUtils.isNotEmpty(vkey)) {// 对于单个缓存对象，可以允许不设置vkey
-			ExpressionParser parser = ParserFacotory.createExpressionParser(ExpressionType.CACHE_KEY);
+			ExpressionParser parser = ParserFactory.createExpressionParser(ExpressionType.CACHE_KEY);
 			parsedVkey = parser.parse(vkey);
 			List<String> vkeyParameterNames = parsedVkey.getParameterNames();
 			Object[] vkeyGettersAndIndexes = getVkeyGettersAndIndexes(method, vkeyParameterNames, paramIndexes,
@@ -112,8 +112,8 @@ public class CacheDefinition extends BaseCacheDefinition {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	protected Object[] getVkeyGettersAndIndexes(Method method, List<String> vkeyParameterNames,
-			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexes) throws DaoGenerateException {
+	private Object[] getVkeyGettersAndIndexes(Method method, List<String> vkeyParameterNames,
+									  Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexes) throws DaoGenerateException {
 
 		Class<?> returnType = method.getReturnType();
 

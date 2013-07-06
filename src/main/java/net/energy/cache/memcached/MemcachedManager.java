@@ -100,7 +100,7 @@ public class MemcachedManager extends MultiLevelCacheManager implements CacheMan
 		return initializeClient(upperCase);
 	}
 
-	public void initializePool(SockIOPool pool) throws Exception {
+	private void initializePool(SockIOPool pool) {
 		Assert.notNull(servers, "Servers必须设置");
 		pool.setServers(servers);
 		if (weights != null) {
@@ -121,10 +121,10 @@ public class MemcachedManager extends MultiLevelCacheManager implements CacheMan
 		pool.initialize();
 	}
 
-	public MemcachedCache initializeClient(String poolName) {
+	private MemcachedCache initializeClient(String poolName) {
 		MemcachedCache cache = clientPool.get(poolName);
 		if (cache == null) {
-			// I don't know why binary protocol is invalide in my pc, so just
+			// I don't know why binary protocol is invalid in my pc, so just
 			// use tcp ascii;
 			MemCachedClient client = new MemCachedClient(poolName, true, false);
 			cache = new MemcachedCache(client);

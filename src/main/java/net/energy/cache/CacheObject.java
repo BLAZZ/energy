@@ -10,8 +10,8 @@ import java.io.Serializable;
  */
 public class CacheObject implements Serializable {
 	private static final long serialVersionUID = 2284022570013430991L;
-	private Serializable cacheObject;
-	private long version;
+	private final Serializable cacheObject;
+	private final long version;
 
 	public Serializable getCacheObject() {
 		return cacheObject;
@@ -22,16 +22,8 @@ public class CacheObject implements Serializable {
 		this.version = version;
 	}
 
-	public void setCacheObject(Serializable cacheObject) {
-		this.cacheObject = cacheObject;
-	}
-
 	public long getVersion() {
 		return version;
-	}
-
-	public void setVersion(long version) {
-		this.version = version;
 	}
 
 	@Override

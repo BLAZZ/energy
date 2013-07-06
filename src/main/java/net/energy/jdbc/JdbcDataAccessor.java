@@ -44,15 +44,6 @@ public interface JdbcDataAccessor {
 	int[] batchUpdate(String sql, List<Object[]> argsList, KeyHolder generatedKeyHolder);
 
 	/**
-	 * 统计
-	 * 
-	 * @param sql
-	 * @param args
-	 * @return
-	 */
-	int queryCount(String sql, Object... args);
-
-	/**
 	 * 分页查询
 	 * 
 	 * @param <T>

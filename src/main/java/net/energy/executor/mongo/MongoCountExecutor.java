@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class MongoCountExecutor extends AbstractMongoExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MongoCountExecutor.class);
 	private MongoCountDefinition definition;
-	
+
 	public MongoCountExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {
 		super(dataAccessor, method);
 	}
@@ -39,15 +39,15 @@ public class MongoCountExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
-		
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
+
 		String collectionName = definition.getCollectionName(args);
 
 		LOGGER.info("Mongo统计操作Shell(带Token)[" + actualShell + "]");
-		
+
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		long result = dataAccessor.count(collectionName, shell);
-		
+
 		return (new Long(result).intValue());
 	}
 

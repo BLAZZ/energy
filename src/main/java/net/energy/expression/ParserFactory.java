@@ -6,12 +6,12 @@ package net.energy.expression;
  * @author wuqh
  * 
  */
-public final class ParserFacotory {
+public final class ParserFactory {
 	private static final SqlParser SQL_PARSER = new SqlParser();
 	private static final CacheKeyParser KEY_PARSER = new CacheKeyParser();
 	private static final MongoShellParser SHELL_PARSER = new MongoShellParser();
 
-	private ParserFacotory() {
+	private ParserFactory() {
 	}
 
 	/**

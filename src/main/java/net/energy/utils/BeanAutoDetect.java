@@ -11,14 +11,14 @@ import java.util.Map.Entry;
 import net.energy.exception.DaoGenerateException;
 
 public abstract class BeanAutoDetect {
-	protected Map<String, Method> writeMethods = new HashMap<String, Method>();
-	protected Map<String, Class<?>> propertyTypes = new HashMap<String, Class<?>>();
+	protected final Map<String, Method> writeMethods = new HashMap<String, Method>();
+	private final Map<String, Class<?>> propertyTypes = new HashMap<String, Class<?>>();
 	protected final Class<?> clazz;
 
-	public BeanAutoDetect(Class<?> clazz) throws DaoGenerateException {
+	protected BeanAutoDetect(Class<?> clazz) throws DaoGenerateException {
 		this.clazz = clazz;
 
-		Map<String, PropertyDescriptor> descriptors = null;
+		Map<String, PropertyDescriptor> descriptors;
 		try {
 			descriptors = IntrospectorUtils.getPropertyDescriptors(clazz);
 		} catch (Exception e) {
@@ -40,7 +40,7 @@ public abstract class BeanAutoDetect {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Object convert(Object oldObject, String property) {
 		Object result = oldObject;
@@ -50,21 +50,21 @@ public abstract class BeanAutoDetect {
 		}
 
 		if (type.equals(BigInteger.class)) {
-			result = new BigInteger(((Number) oldObject).toString());
+			result = new BigInteger((oldObject).toString());
 		}
 
 		if (type.equals(BigDecimal.class) || type.equals(Number.class)) {
-			result = new BigDecimal(((Number) oldObject).toString());
+			result = new BigDecimal((oldObject).toString());
 		}
 
 		return result;
 	}
-	
+
 	/**
 	 * 判断类型是否为可自动类型转换的类型
 	 * 
 	 * @param clazz
 	 * @return
 	 */
-	public abstract boolean isAllowAutoMapType(Class<?> clazz);
+	protected abstract boolean isAllowAutoMapType(Class<?> clazz);
 }

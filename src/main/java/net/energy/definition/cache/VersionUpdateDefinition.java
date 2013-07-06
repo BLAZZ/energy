@@ -16,15 +16,15 @@ public class VersionUpdateDefinition extends BaseCacheDefinition {
 	/**
 	 * 缓存的pool
 	 */
-	private String pool;
+	private final String pool;
 	/**
 	 * 原始的vkey值
 	 */
-	private String vkey;
+	private final String vkey;
 	/**
 	 * 版本缓存最大生存时间，单位：毫秒
 	 */
-	private long expire;
+	private final long expire;
 
 	public VersionUpdateDefinition(VerUpdate update, Method method) throws DaoGenerateException {
 		//VerUpdate信息获取必须放在initDefinition之前，以免调用getSourceKey时无法获取key值
@@ -37,7 +37,7 @@ public class VersionUpdateDefinition extends BaseCacheDefinition {
 	}
 
 	@Override
-	protected String getSourceKey(Method method) {
+	protected String getSourceKey() {
 		return vkey;
 	}
 	

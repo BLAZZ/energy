@@ -38,9 +38,9 @@ public class GeneratedKeyHolder implements KeyHolder {
 		if (this.keyList.size() > 1 || this.keyList.get(0).size() > 1) {
 			throw new RetrievalIdException("getKey方法只适用于单个主键的表结构，但当前表结构包含多个主键: " + this.keyList);
 		}
-		Iterator<Object> keyIter = this.keyList.get(0).values().iterator();
-		if (keyIter.hasNext()) {
-			Object key = keyIter.next();
+		Iterator<Object> keyIterator = this.keyList.get(0).values().iterator();
+		if (keyIterator.hasNext()) {
+			Object key = keyIterator.next();
 			if (!(key instanceof Number)) {
 				throw new RetrievalIdException("生成的主键非数值类型，无法将[" + (key != null ? key.getClass().getName() : null)
 						+ "]类型转换为[" + Number.class.getName() + "]类型");

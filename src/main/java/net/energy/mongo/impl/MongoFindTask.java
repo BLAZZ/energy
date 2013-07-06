@@ -19,31 +19,31 @@ import com.mongodb.DBObject;
  */
 public class MongoFindTask extends Task {
 	private final SimpleMongoDataAccessor dataAccessor;
-	
+
 	public MongoFindTask(SimpleMongoDataAccessor dataAccessor) {
 		Assert.isNull(dataAccessor, "DataAccessor实例不能为空");
 		this.dataAccessor = dataAccessor;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> TaskResult<T> process(TaskParameters parameters) {
 		MongoFindTaskParameters taskParameters = (MongoFindTaskParameters) parameters;
-		
+
 		DBCollection collection = taskParameters.getCollection();
 		DBObject queryDbObject = taskParameters.getQueryDbObject();
-		BeanMapper<?> mapper = (BeanMapper<?>) taskParameters.getMapper();
+		BeanMapper<?> mapper = taskParameters.getMapper();
 		int skip = taskParameters.getSkip();
 		int limit = taskParameters.getLimit();
 		DBObject sort = taskParameters.getSort();
 		int batchSize = taskParameters.getBatchSize();
-		
+
 		List<?> result = dataAccessor.findInternal(collection, queryDbObject, mapper, skip, limit, sort, batchSize);
-		
+
 		TaskResult<T> taskResult = new TaskResult<T>();
 		taskResult.setResult((T) result);
 		taskResult.setDone(true);
-		
+
 		return taskResult;
 	}
-	
+
 }

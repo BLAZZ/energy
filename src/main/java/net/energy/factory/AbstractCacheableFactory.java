@@ -15,7 +15,7 @@ public abstract class AbstractCacheableFactory extends AbstractDaoFactory {
 		this.cacheManager = cacheManager;
 	}
 
-	public CacheManager getCacheManager() {
+	CacheManager getCacheManager() {
 		return cacheManager;
 	}
 }

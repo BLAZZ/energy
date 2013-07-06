@@ -66,38 +66,38 @@ public class JdbcBatchUpdateDefinition extends BaseJdbcDefinition implements Bat
 			if (ClassHelper.isTypeList(returnType)) {
 				isReturnList = true;
 			} else if (!ClassHelper.isTypeArray(returnType)) {
-				throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@ReturnId注解的方法只能返回数组或者List<? extends Number>类型对象");
+				throw new DaoGenerateException("方法[" + method
+						+ "]配置错误：配置了@ReturnId注解的方法只能返回数组或者List<? extends Number>类型对象");
 			} else {
 				returnComponentType = returnType.getComponentType();
 				if (!ClassHelper.isAssignable(returnComponentType, Number.class, true)) {
-					throw new DaoGenerateException(
-							"方法[" + method + "]配置错误：返回类型只能是基本类型数组或者java.lang.Number类型数组");
+					throw new DaoGenerateException("方法[" + method + "]配置错误：返回类型只能是基本类型数组或者java.lang.Number类型数组");
 				}
 
 				isReturnList = false;
 			}
 		} else {
-			if (void.class.equals(returnType) || int.class.equals(returnType.getComponentType())) {
+			if (returnType == null || void.class.equals(returnType) || int.class.equals(returnType.getComponentType())) {
 				return;
 			}
 			throw new DaoGenerateException("方法[" + method + "]配置错误：配置了@BatchUpdate注解的方法只能返回int[]；或者请增加@ReturnId注解");
 		}
 	}
-	
+
 	@Override
 	protected void logBindInfo(Method method) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("绑定" + getDescription() + "到方法[" + method + "]成功");
 		}
 	}
-	
+
 	private String getDescription() {
 		String desc = "@BatchUpdate(" + this.getParsedSql().getOriginalExpression() + ")";
 
-		if(this.isReturnId()) {
+		if (this.isReturnId()) {
 			desc = desc + ",@ReturnId()";
 		}
-		
+
 		return desc;
 	}
 

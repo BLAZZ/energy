@@ -16,8 +16,8 @@ import net.energy.jdbc.RowMapper;
 class CountRowMapper implements RowMapper<Integer> {
 	public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// Validate column count.
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int nrOfColumns = rsmd.getColumnCount();
+		ResultSetMetaData metaData = rs.getMetaData();
+		int nrOfColumns = metaData.getColumnCount();
 		if (nrOfColumns != 1) {
 			throw new CountRowNumberException("返回记录数过多:期望1条, 实际" + nrOfColumns + "条");
 		}

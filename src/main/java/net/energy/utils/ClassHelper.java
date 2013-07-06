@@ -19,7 +19,6 @@ import org.apache.commons.lang.ClassUtils;
  * 
  */
 public class ClassHelper extends ClassUtils {
-	private static final String CLASS_FILE_SUFFIX = ".class";
 	private static final Class<?>[] EMPTY_CLASSES = new Class<?>[0];
 
 	/**
@@ -124,26 +123,13 @@ public class ClassHelper extends ClassUtils {
 	}
 
 	/**
-	 * 通过class获取对应的.class文件名。比如java.lang.String类会返回"String.class"
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public static String getClassFileName(Class<?> clazz) {
-		Assert.notNull(clazz, "Class can not be null");
-		String className = clazz.getName();
-		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		return className.substring(lastDotIndex + 1) + CLASS_FILE_SUFFIX;
-	}
-
-	/**
 	 * 从Generic 类型信息获取传入的实际类信息。例：Map&lt;String,Object&gt;=>[String,Object]
 	 * 
 	 * @param genericType
 	 *            - Generic 类型信息
 	 * @return 实际类信息
 	 */
-	public static Class<?>[] getActualClass(Type genericType) {
+	private static Class<?>[] getActualClass(Type genericType) {
 
 		if (genericType instanceof ParameterizedType) {
 
@@ -189,7 +175,8 @@ public class ClassHelper extends ClassUtils {
 	 * 获取指定参数的第一个泛型类型,例:如果(void method(Collection&lt;String&gt;
 	 * a)，那么getParameterGenericType(method, 0)=>String
 	 * 
-	 * @param clazz
+	 * @param method
+	 * @param paramIndex
 	 * @return
 	 */
 	public static Class<?> getParameterGenericType(Method method, int paramIndex) {
@@ -204,11 +191,12 @@ public class ClassHelper extends ClassUtils {
 			return classes[0];
 		}
 	}
-	
+
 	/**
-	 * 获取返回结果的泛型类型,例:如果(Collection&lt;String&gt; method())，那么getReturnGenericType(method)=>String
+	 * 获取返回结果的泛型类型,例:如果(Collection&lt;String&gt;
+	 * method())，那么getReturnGenericType(method)=>String
 	 * 
-	 * @param clazz
+	 * @param method
 	 * @return
 	 */
 	public static Class<?> getReturnGenericType(Method method) {

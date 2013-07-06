@@ -37,7 +37,7 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	private int skipIndex = -1;
 	private Integer limit;
 	private int limitIndex = -1;
-	DBObject sortObject;
+	private DBObject sortObject;
 	private int batchSize;
 
 	public BeanMapper<?> getBeanMapper() {
@@ -87,7 +87,7 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 		}
 
 		// 解析MongoFind相关的Annotation配置:@MongoLimit,@MongoSkip,@MongoSort
-		configFindExtention(method);
+		configFindExtension(method);
 		// 解析是否包含@Unique配置
 		configUnique(method);
 		// 解析@MongoMapper配置
@@ -103,7 +103,7 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	 * @param method
 	 * @throws DaoGenerateException
 	 */
-	private void configFindExtention(Method method) throws DaoGenerateException {
+	private void configFindExtension(Method method) throws DaoGenerateException {
 		MongoLimit mongoLimit = method.getAnnotation(MongoLimit.class);
 		if (mongoLimit != null && mongoLimit.value() != -1) {
 			limit = mongoLimit.value();
@@ -132,7 +132,7 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 	 * @throws DaoGenerateException
 	 */
 	@SuppressWarnings("rawtypes")
-	private void configRowMapper(Method method) throws DaoGenerateException {
+	private void configRowMapper(Method method) {
 		MongoMapper mapper = method.getAnnotation(MongoMapper.class);
 		Class<? extends BeanMapper> mapperType = AutoDetectBeanMapper.class;
 		if (mapper != null) {
@@ -145,7 +145,8 @@ public class MongoFindDefinition extends BaseMongoDefinition {
 				type = ClassHelper.getReturnGenericType(method);
 			}
 
-			beanMapper = (BeanMapper<?>) ReflectUtils.newInstance(mapperType, new Class[] { Class.class }, new Object[] { type });
+			beanMapper = (BeanMapper<?>) ReflectUtils.newInstance(mapperType, new Class[] { Class.class },
+					new Object[] { type });
 		} else {
 
 			beanMapper = (BeanMapper) ReflectUtils.newInstance(mapperType);

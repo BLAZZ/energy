@@ -4,12 +4,12 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import net.energy.definition.AbstractDefintion;
+import net.energy.definition.AbstractDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
-import net.energy.expression.ParserFacotory;
-import net.energy.expression.ParserFacotory.ExpressionType;
+import net.energy.expression.ParserFactory;
+import net.energy.expression.ParserFactory.ExpressionType;
 import net.energy.utils.Assert;
 import net.energy.utils.Page;
 import net.energy.utils.ReflectionUtils;
@@ -23,21 +23,21 @@ import org.apache.commons.lang.StringUtils;
  * @author wuqh
  * 
  */
-public abstract class BaseCacheDefinition extends AbstractDefintion {
-	public BaseCacheDefinition() throws DaoGenerateException {
-		//使用空方法作为参数，延迟初始化
+public abstract class BaseCacheDefinition extends AbstractDefinition {
+	BaseCacheDefinition() throws DaoGenerateException {
+		// 使用空方法作为参数，延迟初始化
 		super(null);
 	}
 
 	@Override
 	protected void checkBeforeParse(Method method) throws DaoGenerateException {
 	}
-	
+
 	@Override
 	protected void parseInternal(Method method, Map<String, Integer> paramIndexes,
 			Map<String, Integer> batchParamIndexes) throws DaoGenerateException {
 	}
-	
+
 	@Override
 	protected void checkAfterParse(Method method) throws DaoGenerateException {
 	}
@@ -49,24 +49,23 @@ public abstract class BaseCacheDefinition extends AbstractDefintion {
 	@Override
 	protected void logBindInfo(Method method) {
 	}
-	
+
 	@Override
 	protected ParsedExpression parseExpression(Method method) {
-		ExpressionParser parser = ParserFacotory.createExpressionParser(ExpressionType.CACHE_KEY);
+		ExpressionParser parser = ParserFactory.createExpressionParser(ExpressionType.CACHE_KEY);
 
-		ParsedExpression parsedKey = parser.parse(getSourceKey(method));
+		ParsedExpression parsedKey = parser.parse(getSourceKey());
 
 		return parsedKey;
 	}
-	
+
 	/**
 	 * 获取方法中配置的原始CacheKey
 	 * 
-	 * @param method
 	 * @return
 	 */
-	protected abstract String getSourceKey(Method method);
-	
+	protected abstract String getSourceKey();
+
 	/**
 	 * 生成缓存的基本key值，这个过程只是将@Param中的值，结合key、vkey的配置来产生缓存key值，并不包含分页等的判断。
 	 * 
@@ -98,7 +97,7 @@ public abstract class BaseCacheDefinition extends AbstractDefintion {
 			Method method = getterMethods[i];
 			Integer index = parameterIndexes[i];
 
-			Object value = ReflectionUtils.fetchVlaue(method, index, args, parameterNames);
+			Object value = ReflectionUtils.fetchValue(method, index, args, parameterNames);
 			if (value != null) {
 				builder.append(value.toString());
 			}
@@ -165,16 +164,16 @@ public abstract class BaseCacheDefinition extends AbstractDefintion {
 		builder.append(key);
 		return builder.toString();
 	}
-	
-	public abstract ParsedExpression getParsedKey();
-	
-	public abstract Method[] getKeyGetterMethods();
-	
-	public abstract Integer[] getKeyParameterIndexes();
-	
-	public abstract ParsedExpression getParsedVkey();
-	
-	public abstract Method[] getVkeyGetterMethods();
-	
-	public abstract Integer[] getVkeyParameterIndexes();
+
+	protected abstract ParsedExpression getParsedKey();
+
+	protected abstract Method[] getKeyGetterMethods();
+
+	protected abstract Integer[] getKeyParameterIndexes();
+
+	protected abstract ParsedExpression getParsedVkey();
+
+	protected abstract Method[] getVkeyGetterMethods();
+
+	protected abstract Integer[] getVkeyParameterIndexes();
 }

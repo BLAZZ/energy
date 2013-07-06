@@ -72,9 +72,9 @@ public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
 
 		List<Number> keys = new ArrayList<Number>();
 		for (int i = 0; i < length; i++) {
-			Iterator<Object> keyIter = generatedKeys.get(i).values().iterator();
-			if (keyIter.hasNext()) {
-				Object key = keyIter.next();
+			Iterator<Object> keyIterator = generatedKeys.get(i).values().iterator();
+			if (keyIterator.hasNext()) {
+				Object key = keyIterator.next();
 				if (!(key instanceof Number)) {
 					String className = null;
 					if (key != null) {
@@ -103,7 +103,7 @@ public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
 		}
 
 		int length = keys.size();
-		// 将返回结果从List<? extends Numer>转换为数组
+		// 将返回结果从List<? extends Number>转换为数组
 		Class<?> componentType = batchUpdateDefinition.getReturnComponentType();
 		if (!ClassHelper.isTypePrimitive(componentType)) {
 			Object array = Array.newInstance(componentType, length);
@@ -116,7 +116,7 @@ public class JdbcBatchUpdateExecutor extends AbstractJdbcExecutor {
 	}
 
 	/**
-	 * 将List<? extends Numer>转换为基本类型数组
+	 * 将List<? extends Number>转换为基本类型数组
 	 * 
 	 * @param keys
 	 * @param componentType

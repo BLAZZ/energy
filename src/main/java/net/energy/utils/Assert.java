@@ -6,7 +6,7 @@ import java.util.Collection;
  * 断言判断类
  * 
  * @author wuqh
- *
+ * 
  */
 public class Assert {
 	/**
@@ -32,19 +32,19 @@ public class Assert {
 			throw new IllegalArgumentException(message);
 		}
 	}
-	
+
 	/**
 	 * 断言集合必须包含元素，否则将抛出IllegalArgumentException
 	 * 
-	 * @param object
+	 * @param collection
 	 * @param message
 	 */
 	public static void notEmpty(Collection<?> collection, String message) {
-		if(collection == null || collection.isEmpty()) {
+		if (collection == null || collection.isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 	}
-	
+
 	/**
 	 * 断言表达式必须为真，否则将抛出IllegalArgumentException
 	 * 
@@ -52,7 +52,7 @@ public class Assert {
 	 * @param message
 	 */
 	public static void isTrue(boolean expression, String message) {
-		if(!expression) {
+		if (!expression) {
 			throw new IllegalArgumentException(message);
 		}
 	}

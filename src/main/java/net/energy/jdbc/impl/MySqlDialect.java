@@ -23,7 +23,7 @@ public class MySqlDialect implements Dialect {
 		return "select count(1) from (" + sql + ") cntTbl;";
 	}
 
-	protected String escapeLastSemicolon(String sql) {
+	String escapeLastSemicolon(String sql) {
 		Assert.notNull(sql, "SQL不能为空");
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);

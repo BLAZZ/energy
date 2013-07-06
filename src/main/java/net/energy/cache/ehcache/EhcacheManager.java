@@ -1,15 +1,12 @@
 package net.energy.cache.ehcache;
 
 import java.io.InputStream;
-import java.util.Set;
 
 import net.energy.cache.CacheManager;
 import net.energy.cache.MultiLevelCache;
 import net.energy.cache.MultiLevelCacheManager;
 import net.energy.exception.CacheUnreachableException;
 import net.energy.utils.ClassHelper;
-import net.sf.ehcache.bootstrap.BootstrapCacheLoader;
-import net.sf.ehcache.event.CacheEventListener;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,27 +33,7 @@ import org.slf4j.LoggerFactory;
 public class EhcacheManager extends MultiLevelCacheManager implements CacheManager {
 	private static final String CLASSPATH_PREFIX = "classpath:";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EhcacheManager.class);
-	net.sf.ehcache.CacheManager cacheManager;
-
-	private int maxElementsInMemory = 10000;
-
-	private MemoryStoreEvictionPolicy memoryStoreEvictionPolicy = MemoryStoreEvictionPolicy.LRU;
-
-	private boolean overflowToDisk = true;
-
-	private boolean eternal = false;
-
-	private int timeToLive = 120;
-
-	private int timeToIdle = 120;
-
-	private boolean diskPersistent = false;
-
-	private int diskExpiryThreadIntervalSeconds = 120;
-
-	private BootstrapCacheLoader bootstrapCacheLoader;
-
-	private Set<CacheEventListener> cacheEventListeners;
+	private net.sf.ehcache.CacheManager cacheManager;
 
 	private String configLocation;
 
@@ -64,16 +41,12 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 		this.configLocation = configLocation;
 	}
 
-	public void setCacheManager(net.sf.ehcache.CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
 	private boolean initialized = false;
 
 	@Override
 	protected MultiLevelCache getCurrentLevelCache(String pool) {
 		initialize();
-		net.sf.ehcache.Cache cache = null;
+		net.sf.ehcache.Cache cache;
 		try {
 			cache = doGetCache(pool.toUpperCase());
 		} catch (Exception e) {
@@ -103,15 +76,18 @@ public class EhcacheManager extends MultiLevelCacheManager implements CacheManag
 	}
 
 	private net.sf.ehcache.Cache createCache(String cacheName) {
+		MemoryStoreEvictionPolicy memoryStoreEvictionPolicy = MemoryStoreEvictionPolicy.LRU;
+		int maxElementsInMemory = 10000;
+		boolean overflowToDisk = true;
+		boolean eternal = false;
+		int timeToLive = 120;
+		int timeToIdle = 120;
+		boolean diskPersistent = false;
+		int diskExpiryThreadIntervalSeconds = 120;
 		net.sf.ehcache.Cache cache = new net.sf.ehcache.Cache(cacheName, maxElementsInMemory,
 				memoryStoreEvictionPolicy, overflowToDisk, null, eternal, timeToLive, timeToIdle, diskPersistent,
-				diskExpiryThreadIntervalSeconds, null, bootstrapCacheLoader);
+				diskExpiryThreadIntervalSeconds, null, null);
 
-		if (this.cacheEventListeners != null) {
-			for (CacheEventListener listener : this.cacheEventListeners) {
-				cache.getCacheEventNotificationService().registerListener(listener);
-			}
-		}
 		return cache;
 
 	}

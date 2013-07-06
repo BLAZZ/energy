@@ -8,7 +8,7 @@ import java.util.Set;
  * @author wuqh
  * 
  */
-public abstract class AbstractExpressionParser implements ExpressionParser {
+abstract class AbstractExpressionParser implements ExpressionParser {
 	/**
 	 * 获取参数分隔符。即：参数起始符“:”到这个数组中的值之间的部分就是参数
 	 * 
@@ -38,7 +38,7 @@ public abstract class AbstractExpressionParser implements ExpressionParser {
 	 * @param namedParameterCount
 	 * @return
 	 */
-	protected int addNamedParameter(Set<String> namedParameters, String parameter, int namedParameterCount) {
+	int addNamedParameter(Set<String> namedParameters, String parameter, int namedParameterCount) {
 		if (!namedParameters.contains(parameter)) {
 			namedParameters.add(parameter);
 			namedParameterCount++;
@@ -49,15 +49,14 @@ public abstract class AbstractExpressionParser implements ExpressionParser {
 	/**
 	 * 获取参数的结束位置
 	 * 
+	 *
 	 * @param expressionChars
 	 *            表达式内容
-	 * @param i
-	 *            当前内容在expressionChars中的index
 	 * @param j
 	 *            参数起始符位置在expressionChars中的index
 	 * @return 参数的结束位置
 	 */
-	protected int endIndexOfParameter(char[] expressionChars, int i, int j) {
+	int endIndexOfParameter(char[] expressionChars, int j) {
 		while (j < expressionChars.length && !isParameterSeparator(expressionChars[j])) {
 			j++;
 		}
@@ -73,7 +72,7 @@ public abstract class AbstractExpressionParser implements ExpressionParser {
 	 *            当前内容在expressionChars中的index
 	 * @return 跳过注释后的有效表达式起始位置
 	 */
-	protected int skipCommentsAndQuotes(char[] expressionChars, int position) {
+	int skipCommentsAndQuotes(char[] expressionChars, int position) {
 		String[] startSkip = getStartSkip();
 
 		for (int i = 0; i < startSkip.length; i++) {
@@ -107,7 +106,7 @@ public abstract class AbstractExpressionParser implements ExpressionParser {
 	 *            当前内容在expressionChars中的index
 	 * @return 跳过注释后的有效表达式起始位置
 	 */
-	protected int endIndexOfCommentsAndQuotes(char[] expressionChars, int i, int position) {
+	int endIndexOfCommentsAndQuotes(char[] expressionChars, int i, int position) {
 		String[] startSkip = getStartSkip();
 		String[] stopSkip = getStopSkip();
 
@@ -144,7 +143,7 @@ public abstract class AbstractExpressionParser implements ExpressionParser {
 	 * @param c
 	 * @return
 	 */
-	protected boolean isParameterSeparator(char c) {
+	boolean isParameterSeparator(char c) {
 		if (Character.isWhitespace(c)) {
 			return true;
 		}

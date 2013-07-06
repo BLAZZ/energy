@@ -11,32 +11,12 @@ import net.energy.mongo.impl.QueryBuilder;
  * 
  */
 public class MongoShell {
-	private String shellWithToken;
-	private Object[] shellParameters;
-
-	public MongoShell() {
-		super();
-	}
+	private final String shellWithToken;
+	private final Object[] shellParameters;
 
 	public MongoShell(String shell, Object[] args) {
 		this.shellWithToken = shell;
 		this.shellParameters = args;
-	}
-
-	public String getShellWithToken() {
-		return shellWithToken;
-	}
-
-	public void setShellWithToken(String shellWithToken) {
-		this.shellWithToken = shellWithToken;
-	}
-
-	public Object[] getShellParameters() {
-		return shellParameters;
-	}
-
-	public void setShellParameters(Object[] shellParameters) {
-		this.shellParameters = shellParameters;
 	}
 
 	/**

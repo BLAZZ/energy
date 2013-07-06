@@ -50,18 +50,18 @@ public class CacheDefinitionCollection {
 
 		CacheUpdate cacheUpdate = method.getAnnotation(CacheUpdate.class);
 		if (cacheUpdate != null) {
-			parseCacheUpdateDeiniftion(cacheUpdate, method);
+			parseCacheUpdateDefinition(cacheUpdate, method);
 		}
 
 		if (cacheDefinition != null && (cacheDeleteDefinitions != null || versionUpdateDefinitions != null)) {
 			throw new DaoGenerateException("方法[" + method
 					+ "]配置错误：方法中@Cache注解不能和其他的缓存更新类注解（@CacheDelete、@VerUpdate、@CacheUpdate）共存");
 		}
-		
+
 		logBindInfo(method);
 	}
 
-	public boolean needCacheOpration() {
+	public boolean needCacheOperation() {
 		return (cacheDefinition != null || cacheDeleteDefinitions != null || versionUpdateDefinitions != null);
 	}
 
@@ -85,7 +85,7 @@ public class CacheDefinitionCollection {
 		}
 	}
 
-	private void parseCacheUpdateDeiniftion(CacheUpdate cacheUpdate, Method method) throws DaoGenerateException {
+	private void parseCacheUpdateDefinition(CacheUpdate cacheUpdate, Method method) throws DaoGenerateException {
 		CacheDelete[] deletes = cacheUpdate.delete();
 		VerUpdate[] updates = cacheUpdate.update();
 
@@ -120,26 +120,26 @@ public class CacheDefinitionCollection {
 	}
 
 	private String getVerUpdateDescription(VersionUpdateDefinition update) {
-		return "@VerUpdate(vkey=[" + update.getVkey() + "],pool=[" + update.getPool() + "],expire=[" + update.getExpire()
-				+ "(毫秒)])";
+		return "@VerUpdate(vkey=[" + update.getVkey() + "],pool=[" + update.getPool() + "],expire=["
+				+ update.getExpire() + "(毫秒)])";
 	}
-	
+
 	private void logBindInfo(Method method) {
 		boolean debugEnable = LOGGER.isDebugEnabled();
-		
-		if(cacheDefinition != null && debugEnable) {
-			LOGGER.debug("绑定"+getCacheDescription(cacheDefinition) + "到方法["+method+"]成功");
+
+		if (cacheDefinition != null && debugEnable) {
+			LOGGER.debug("绑定" + getCacheDescription(cacheDefinition) + "到方法[" + method + "]成功");
 		}
-		
-		if(cacheDeleteDefinitions != null && debugEnable) {
-			for(CacheDeleteDefinition definition : cacheDeleteDefinitions) {
-				LOGGER.debug("绑定"+getCacheDeleteDescription(definition) + "到方法["+method+"]成功");
+
+		if (cacheDeleteDefinitions != null && debugEnable) {
+			for (CacheDeleteDefinition definition : cacheDeleteDefinitions) {
+				LOGGER.debug("绑定" + getCacheDeleteDescription(definition) + "到方法[" + method + "]成功");
 			}
 		}
-		
-		if(versionUpdateDefinitions != null && debugEnable) {
-			for(VersionUpdateDefinition definition : versionUpdateDefinitions) {
-				LOGGER.debug("绑定"+getVerUpdateDescription(definition) + "到方法["+method+"]成功");
+
+		if (versionUpdateDefinitions != null && debugEnable) {
+			for (VersionUpdateDefinition definition : versionUpdateDefinitions) {
+				LOGGER.debug("绑定" + getVerUpdateDescription(definition) + "到方法[" + method + "]成功");
 			}
 		}
 	}

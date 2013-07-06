@@ -51,10 +51,10 @@ public class TaskRepository {
 	 */
 	public static <T> T processTask(Task task, TaskParameters taskParameters, long timeout) {
 		boolean isFirst = isFirstTask(task, taskParameters);
-		TaskResult<T> result = null;
+		TaskResult<T> result;
 
 		if (isFirst) {
-			if(LOGGER.isDebugEnabled()) {
+			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程是任务队列的第一个任务，将会被执行");
 			}
 			result = task.process(taskParameters);
@@ -70,7 +70,7 @@ public class TaskRepository {
 			}
 
 		} else {
-			if(LOGGER.isDebugEnabled()) {
+			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Thread" + Thread.currentThread().getId() + ":当前线程不是任务队列的第一个任务，开始等待一个任务处理结果");
 			}
 			try {
@@ -117,7 +117,7 @@ public class TaskRepository {
 	 * @param taskParameters
 	 */
 	private static void clearListeners(TaskParameters taskParameters) {
-		if(LOGGER.isDebugEnabled()) {
+		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Thread" + Thread.currentThread().getId() + ":清空任务队列");
 		}
 		tasks.remove(taskParameters);

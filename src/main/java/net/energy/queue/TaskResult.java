@@ -8,8 +8,8 @@ package net.energy.queue;
  * @param <T>
  */
 public class TaskResult<T> {
-	public T result;
-	public boolean done;
+	private T result;
+	private boolean done;
 
 	public T getResult() {
 		return result;

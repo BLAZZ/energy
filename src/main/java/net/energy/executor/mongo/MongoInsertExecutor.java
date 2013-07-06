@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class MongoInsertExecutor extends AbstractMongoExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MongoInsertExecutor.class);
 	private MongoInsertDefinition definition;
-	
+
 	public MongoInsertExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {
 		super(dataAccessor, method);
 	}
@@ -39,15 +39,15 @@ public class MongoInsertExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
-		
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
+
 		String collectionName = definition.getCollectionName(args);
 
 		LOGGER.info("Mongo插入操作Shell(带Token)[" + actualShell + "]");
-		
+
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		boolean result = dataAccessor.insert(collectionName, shell);
-			
+
 		return result;
 	}
 

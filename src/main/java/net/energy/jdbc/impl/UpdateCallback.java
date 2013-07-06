@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
  * 增删改类SQL调用方法
  * 
  * @author wuqh
- * 
- * @param <T>
  */
 class UpdateCallback implements PreparedStatementCallback<Integer> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCallback.class);

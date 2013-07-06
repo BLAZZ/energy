@@ -17,7 +17,7 @@ public abstract class AbstractCollectionCallBack<T> implements CollectionCallbac
 	private final MongoShell shell;
 	private final WriteConcern concern;
 
-	public AbstractCollectionCallBack(MongoShell shell, WriteConcern concern) {
+	AbstractCollectionCallBack(MongoShell shell, WriteConcern concern) {
 		this.shell = shell;
 		this.concern = concern;
 	}
@@ -34,13 +34,13 @@ public abstract class AbstractCollectionCallBack<T> implements CollectionCallbac
 	 * @param concern
 	 * @return
 	 */
-	public abstract T doInCollectionWithConcern(DBCollection collection, WriteConcern concern);
+	protected abstract T doInCollectionWithConcern(DBCollection collection, WriteConcern concern);
 
 	private WriteConcern getWriteConcern(DBCollection collection) {
 		return MongoDbUtils.getWriteConcern(collection, concern);
 	}
 
-	protected MongoShell getShell() {
+	MongoShell getShell() {
 		return shell;
 	}
 }

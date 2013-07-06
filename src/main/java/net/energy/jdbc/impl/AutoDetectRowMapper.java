@@ -21,8 +21,8 @@ import net.energy.utils.ClassHelper;
 import net.sf.cglib.core.ReflectUtils;
 
 public class AutoDetectRowMapper<T> extends BeanAutoDetect implements RowMapper<T> {
-	private Set<String> colunmNameSet = new HashSet<String>();
-	private Map<String, String> colunmClassName = new HashMap<String, String>();
+	private final Set<String> columnNameSet = new HashSet<String>();
+	private final Map<String, String> columnClassName = new HashMap<String, String>();
 
 	public AutoDetectRowMapper(Class<T> clazz) throws DaoGenerateException {
 		super(clazz);
@@ -37,9 +37,9 @@ public class AutoDetectRowMapper<T> extends BeanAutoDetect implements RowMapper<
 			return result;
 		}
 
-		initColumName(rs);
+		initColumnName(rs);
 
-		for (String property : colunmNameSet) {
+		for (String property : columnNameSet) {
 			Method writeMethod = writeMethods.get(property);
 			Object object = getResultSetValue(rs, property);
 
@@ -53,15 +53,15 @@ public class AutoDetectRowMapper<T> extends BeanAutoDetect implements RowMapper<
 		return null;
 	}
 
-	private void initColumName(ResultSet rs) throws SQLException {
-		if (colunmNameSet.isEmpty()) {
-			synchronized (colunmNameSet) {
-				if (colunmNameSet.isEmpty()) {
+	private void initColumnName(ResultSet rs) throws SQLException {
+		if (columnNameSet.isEmpty()) {
+			synchronized (columnNameSet) {
+				if (columnNameSet.isEmpty()) {
 					ResultSetMetaData metaData = rs.getMetaData();
 					int columnCount = metaData.getColumnCount();
 					for (int i = 1; i <= columnCount; i++) {
-						colunmNameSet.add(metaData.getColumnName(i));
-						colunmClassName.put(metaData.getColumnName(i), metaData.getColumnClassName(i));
+						columnNameSet.add(metaData.getColumnName(i));
+						columnClassName.put(metaData.getColumnName(i), metaData.getColumnClassName(i));
 					}
 				}
 			}
@@ -69,29 +69,29 @@ public class AutoDetectRowMapper<T> extends BeanAutoDetect implements RowMapper<
 
 	}
 
-	private Object getResultSetValue(ResultSet rs, String columName) throws SQLException {
-		Object obj = rs.getObject(columName);
+	private Object getResultSetValue(ResultSet rs, String columnName) throws SQLException {
+		Object obj = rs.getObject(columnName);
 		String className = null;
 		if (obj != null) {
 			className = obj.getClass().getName();
 		}
 		if (obj instanceof Blob) {
-			obj = rs.getBytes(columName);
+			obj = rs.getBytes(columnName);
 		} else if (obj instanceof Clob) {
-			obj = rs.getString(columName);
+			obj = rs.getString(columnName);
 		} else if (className != null
 				&& ("oracle.sql.TIMESTAMP".equals(className) || "oracle.sql.TIMESTAMPTZ".equals(className))) {
-			obj = rs.getTimestamp(columName);
+			obj = rs.getTimestamp(columnName);
 		} else if (className != null && className.startsWith("oracle.sql.DATE")) {
-			String metaDataClassName = colunmClassName.get(columName);
+			String metaDataClassName = columnClassName.get(columnName);
 			if ("java.sql.Timestamp".equals(metaDataClassName) || "oracle.sql.TIMESTAMP".equals(metaDataClassName)) {
-				obj = rs.getTimestamp(columName);
+				obj = rs.getTimestamp(columnName);
 			} else {
-				obj = rs.getDate(columName);
+				obj = rs.getDate(columnName);
 			}
 		} else if (obj != null && obj instanceof java.sql.Date) {
-			if ("java.sql.Timestamp".equals(colunmClassName.get(columName))) {
-				obj = rs.getTimestamp(columName);
+			if ("java.sql.Timestamp".equals(columnClassName.get(columnName))) {
+				obj = rs.getTimestamp(columnName);
 			}
 		}
 		return obj;

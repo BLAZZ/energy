@@ -13,27 +13,15 @@ public class ParsedExpression {
 	/**
 	 * 原始表达式
 	 */
-	private String originalExpression;
+	private final String originalExpression;
 	/**
 	 * 参数的名称
 	 */
-	private List<String> parameterNames = new ArrayList<String>();
+	private final List<String> parameterNames = new ArrayList<String>();
 	/**
 	 * 参数的起止位置
 	 */
-	private List<int[]> parameterIndexes = new ArrayList<int[]>();
-	/**
-	 * 参数个数
-	 */
-	private int namedParameterCount;
-	/**
-	 * 变量个数，暂时不支持变量
-	 */
-	private int unnamedParameterCount;
-	/**
-	 * 所有参数个数
-	 */
-	private int totalParameterCount;
+	private final List<int[]> parameterIndexes = new ArrayList<int[]>();
 
 	public ParsedExpression(String originalExpression) {
 		this.originalExpression = originalExpression;
@@ -54,30 +42,6 @@ public class ParsedExpression {
 
 	public int[] getParameterIndexes(int parameterPosition) {
 		return this.parameterIndexes.get(parameterPosition);
-	}
-
-	void setNamedParameterCount(int namedParameterCount) {
-		this.namedParameterCount = namedParameterCount;
-	}
-
-	public int getNamedParameterCount() {
-		return this.namedParameterCount;
-	}
-
-	void setUnnamedParameterCount(int unnamedParameterCount) {
-		this.unnamedParameterCount = unnamedParameterCount;
-	}
-
-	public int getUnnamedParameterCount() {
-		return this.unnamedParameterCount;
-	}
-
-	void setTotalParameterCount(int totalParameterCount) {
-		this.totalParameterCount = totalParameterCount;
-	}
-
-	public int getTotalParameterCount() {
-		return this.totalParameterCount;
 	}
 
 }

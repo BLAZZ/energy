@@ -17,7 +17,7 @@ import com.mongodb.MongoException;
  * 用于获取MongoDB连接的工厂类
  * 
  * @author wuqh
- *
+ * 
  */
 public class MongoDbFactory {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MongoDbFactory.class);
@@ -28,7 +28,7 @@ public class MongoDbFactory {
 	private String dbName;
 	private Mongo mongo;
 	private boolean initialized = false;
-	
+
 	public void setHost(String host) {
 		this.host = host;
 	}
@@ -50,8 +50,8 @@ public class MongoDbFactory {
 	}
 
 	private void initMongo() {
-		if(initialized) {
-			if(mongo == null) {//init mongo errror
+		if (initialized) {
+			if (mongo == null) {// init mongo error
 				throw new DataAccessException("创建mongo实例失败");
 			}
 		} else {
@@ -66,7 +66,7 @@ public class MongoDbFactory {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取一个{@link DB}连接
 	 * 
@@ -74,9 +74,9 @@ public class MongoDbFactory {
 	 */
 	public DB getDB() {
 		initMongo();
-		
+
 		DB db = MongoDbUtils.getDB(mongo, dbName, username, password == null ? null : password.toCharArray());
 
 		return db;
-	} 
+	}
 }

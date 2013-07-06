@@ -80,7 +80,7 @@ public class SimpleMongoDataAccessor implements MongoDataAccessor {
 		DBCollection collection = getCollection(collectionName);
 
 		DBObject queryDbObject = shell.toDbObject();
-		
+
 		return countInternal(collection, queryDbObject);
 	}
 
@@ -108,7 +108,7 @@ public class SimpleMongoDataAccessor implements MongoDataAccessor {
 		return findInternal(collection, queryDbObject, mapper, query.getSkip(), query.getLimit(), query.getSort(),
 				query.getBatchSize());
 	}
-	
+
 	/**
 	 * 执行Mongo的操作
 	 * 
@@ -147,15 +147,15 @@ public class SimpleMongoDataAccessor implements MongoDataAccessor {
 	 * @param batchSize
 	 * @return
 	 */
-	protected <T> List<T> findInternal(DBCollection collection, DBObject queryDbObject, BeanMapper<T> mapper, int skip,
+	<T> List<T> findInternal(DBCollection collection, DBObject queryDbObject, BeanMapper<T> mapper, int skip,
 			int limit, DBObject sort, int batchSize) {
 		FindCallBack<T> findCallBack = new FindCallBack<T>(queryDbObject, batchSize, mapper);
-		
+
 		findCallBack.setSkip(skip);
 		findCallBack.setLimit(limit);
 		findCallBack.setSort(sort);
-		
+
 		return findCallBack.doInCollection(collection);
-		
+
 	}
 }

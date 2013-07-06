@@ -13,12 +13,10 @@ import net.energy.mongo.MongoDataAccessor;
  * 
  */
 public abstract class AbstractMongoExecutor implements DataAccessExecutor {
-	protected final MongoDataAccessor dataAccessor;
-	protected final Method method;
+	final MongoDataAccessor dataAccessor;
 
-	public AbstractMongoExecutor(MongoDataAccessor dataAccessor,Method method) throws DaoGenerateException {
+	AbstractMongoExecutor(MongoDataAccessor dataAccessor, Method method) throws DaoGenerateException {
 		this.dataAccessor = dataAccessor;
-		this.method = method;
 		initDefinition(method);
 	}
 

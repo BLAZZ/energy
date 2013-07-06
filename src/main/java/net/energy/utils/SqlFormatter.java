@@ -8,11 +8,11 @@ import java.util.Map;
  * 用于替换SQL中的通用表名的工具类
  * 
  * @author wuqh
- *
+ * 
  */
 public final class SqlFormatter {
-	private static Map<String, String> formattedSqls = new HashMap<String, String>();
-	
+	private static final Map<String, String> formattedSql = new HashMap<String, String>();
+
 	private SqlFormatter() {
 	}
 
@@ -25,16 +25,16 @@ public final class SqlFormatter {
 	 */
 	public static String formatSql(String sqlNeedFormat, String[] tableNames) {
 		StringBuilder key = new StringBuilder();
-		for(String tableName : tableNames) {
+		for (String tableName : tableNames) {
 			key.append(tableName);
 		}
 		key.append(sqlNeedFormat);
 		String keyStr = key.toString();
-		String sql = formattedSqls.get(keyStr);
+		String sql = formattedSql.get(keyStr);
 		if (sql == null) {
 			MessageFormat format = new MessageFormat(sqlNeedFormat);
 			sql = format.format(tableNames);
-			formattedSqls.put(keyStr, sql);
+			formattedSql.put(keyStr, sql);
 		}
 		return sql;
 

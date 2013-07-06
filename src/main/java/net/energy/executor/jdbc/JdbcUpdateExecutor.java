@@ -34,7 +34,7 @@ public class JdbcUpdateExecutor extends AbstractJdbcExecutor {
 		// 获取实际用于执行的preparedSQL
 		String actualSql = definition.getActualSql(args);
 		List<String> parameterNames = definition.getParsedSql().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
 
 		KeyHolder keyHolder = null;
 		if (isReturnId) {
@@ -55,7 +55,5 @@ public class JdbcUpdateExecutor extends AbstractJdbcExecutor {
 	protected void initDefinition(Method method) throws DaoGenerateException {
 		definition = new JdbcUpdateDefinition(method);
 	}
-
-	
 
 }

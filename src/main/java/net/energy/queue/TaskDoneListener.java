@@ -6,7 +6,7 @@ package net.energy.queue;
  * @author wuqh
  *
  */
-public class TaskDoneListener {
+class TaskDoneListener {
 	private final Task task;
 
 	public TaskDoneListener(Task task) {

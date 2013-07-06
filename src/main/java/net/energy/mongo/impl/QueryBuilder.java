@@ -55,7 +55,7 @@ public class QueryBuilder {
 		PATTERN = Pattern.compile(TOKEN);
 	}
 
-	public static <T> boolean isBsonPrimitives(Class<T> clazz) {
+	private static <T> boolean isBsonPrimitives(Class<T> clazz) {
 		if (PRIMITIVES.contains(clazz)) {
 			return true;
 		}
@@ -78,7 +78,7 @@ public class QueryBuilder {
 		}
 	}
 
-	public static String generateQuery(String query, Object... parameters) {
+	private static String generateQuery(String query, Object... parameters) {
 		assertThatParamsCanBeBound(query, parameters);
 		int paramIndex = 0;
 		while (query.contains(TOKEN)) {

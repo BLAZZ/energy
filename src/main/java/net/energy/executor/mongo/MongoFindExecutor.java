@@ -45,7 +45,7 @@ public class MongoFindExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 

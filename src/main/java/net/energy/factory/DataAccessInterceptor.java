@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author wuqh
  * @see MethodInterceptor
  */
-public class DataAccessInterceptor implements MethodInterceptor {
+class DataAccessInterceptor implements MethodInterceptor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataAccessInterceptor.class);
 	private static final int CACHE_INIT_SIZE = 256;
 

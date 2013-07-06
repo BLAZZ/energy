@@ -18,11 +18,11 @@ import net.energy.utils.JdbcUtils;
 class ColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 
 	public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int columnCount = rsmd.getColumnCount();
+		ResultSetMetaData metaData = rs.getMetaData();
+		int columnCount = metaData.getColumnCount();
 		Map<String, Object> mapOfColValues = createColumnMap(columnCount);
 		for (int i = 1; i <= columnCount; i++) {
-			String key = getColumnKey(JdbcUtils.lookupColumnName(rsmd, i));
+			String key = getColumnKey(JdbcUtils.lookupColumnName(metaData, i));
 			Object obj = getColumnValue(rs, i);
 			mapOfColValues.put(key, obj);
 		}
@@ -35,7 +35,7 @@ class ColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 	 * @param columnCount
 	 * @return
 	 */
-	protected Map<String, Object> createColumnMap(int columnCount) {
+	private Map<String, Object> createColumnMap(int columnCount) {
 		return new LinkedHashMap<String, Object>(columnCount);
 	}
 
@@ -45,7 +45,7 @@ class ColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 	 * @param columnName
 	 * @return
 	 */
-	protected String getColumnKey(String columnName) {
+	private String getColumnKey(String columnName) {
 		return columnName;
 	}
 
@@ -58,7 +58,7 @@ class ColumnMapRowMapper implements RowMapper<Map<String, Object>> {
 	 * @return
 	 * @throws SQLException
 	 */
-	protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
+	private Object getColumnValue(ResultSet rs, int index) throws SQLException {
 		return JdbcUtils.getResultSetValue(rs, index);
 	}
 

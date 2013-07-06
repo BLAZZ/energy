@@ -45,7 +45,7 @@ public class CacheExecutor implements DataAccessExecutor {
 	@Override
 	public Object execute(Object obj, Object[] args) {
 		// 如果没有配置Cache操作，则直接执行数据访问操作
-		if (!cacheDefinitionCollection.needCacheOpration()) {
+		if (!cacheDefinitionCollection.needCacheOperation()) {
 			return dataAccessExecutor.execute(obj, args);
 		}
 
@@ -246,8 +246,8 @@ public class CacheExecutor implements DataAccessExecutor {
 		CacheDefinition cacheDefinition = cacheDefinitionCollection.getCacheDefinition();
 		// 如果不是缓存获取操作，则只需要进行简单的缓存删除和版本信息更新
 		if (cacheDefinition == null) {
-			updateVersion(cacheResult, args);
-			deleteCache(cacheResult, args);
+			updateVersion(args);
+			deleteCache(args);
 			return;
 		}
 		// 对于没有命中的缓存，需要进行缓存的更新以及版本信息的重新构建。
@@ -291,11 +291,11 @@ public class CacheExecutor implements DataAccessExecutor {
 	/**
 	 * 更新指定版本的当前版本号
 	 * 
-	 * @param cacheResult
+	 *
 	 * @param args
 	 * @throws CacheUnreachableException
 	 */
-	private void updateVersion(CacheResult cacheResult, Object[] args) throws CacheUnreachableException {
+	private void updateVersion(Object[] args) throws CacheUnreachableException {
 		List<VersionUpdateDefinition> updates = cacheDefinitionCollection.getVersionUpdateDefinitions();
 		if (updates == null) {
 			return;
@@ -325,11 +325,11 @@ public class CacheExecutor implements DataAccessExecutor {
 	 * 
 	 * 参数指定缓存
 	 * 
-	 * @param cacheResult
+	 *
 	 * @param args
 	 * @throws CacheUnreachableException
 	 */
-	private void deleteCache(CacheResult cacheResult, Object[] args) throws CacheUnreachableException {
+	private void deleteCache(Object[] args) throws CacheUnreachableException {
 		List<CacheDeleteDefinition> deletes = cacheDefinitionCollection.getCacheDeleteDefinitions();
 		if (deletes == null) {
 			return;
@@ -390,7 +390,7 @@ public class CacheExecutor implements DataAccessExecutor {
 
 			// versionKey不为空但是对应的值却为空或者无意义，表明版本信息不存在，需要更新版本信息。
 			// 否则就可以将缓存的版本信息作为当前的版本信息
-			if (versionKey != null && (cachedCurrentVersion == null || cachedCurrentVersion <= 0)) {
+			if ((cachedCurrentVersion == null || cachedCurrentVersion <= 0)) {
 				// 使用系统时间作为版本号，防止当前版本号与之前某个版本号正好一致，而是对象无法失效
 				currentVersion = System.currentTimeMillis();
 				long expire = cacheDefinition.getExpire();
@@ -402,11 +402,6 @@ public class CacheExecutor implements DataAccessExecutor {
 				}
 				cacheResult.setCurrentVersion(currentVersion);
 			} else {
-				// 如果versionKey为空，说明缓存不需要关联版本信息，直接以当前时间作为缓存版本的版本号
-				if (cachedCurrentVersion == null || cachedCurrentVersion <= 0) {
-					// 使用系统时间作为版本号，防止当前版本号与之前某个版本号正好一致，而是对象无法失效
-					cachedCurrentVersion = System.currentTimeMillis();
-				}
 				cacheResult.setCurrentVersion(cachedCurrentVersion);
 			}
 		}

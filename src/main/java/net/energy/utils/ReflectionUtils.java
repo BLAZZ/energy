@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class ReflectionUtils {
-	static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtils.class);
 
 	/**
 	 * 查找指定类中的所有方法（包括父类和接口中的方法），并使用方法回调接口对这些方法进行处理。
@@ -81,7 +81,7 @@ public class ReflectionUtils {
 	/**
 	 * 预设的MethodFilter实现类，用于匹配方法中所有的非桥接方法和所有非<code>java.lang.Object</code>申明的方法
 	 */
-	public static MethodFilter USER_DECLARED_METHODS = new MethodFilter() {
+	public static final MethodFilter USER_DECLARED_METHODS = new MethodFilter() {
 
 		public boolean matches(Method method) {
 			return (!method.isBridge() && method.getDeclaringClass() != Object.class);
@@ -97,14 +97,14 @@ public class ReflectionUtils {
 	 * @param parameterNames
 	 * @return
 	 */
-	public static Object[] fetchVlaues(Method[] getterMethods, Integer[] parameterIndexes, Object[] args,
+	public static Object[] fetchValues(Method[] getterMethods, Integer[] parameterIndexes, Object[] args,
 			List<String> parameterNames) {
 		Object[] values = new Object[getterMethods.length];
 		for (int i = 0; i < getterMethods.length; i++) {
 			Method method = getterMethods[i];
 			Integer index = parameterIndexes[i];
 
-			Object value = fetchVlaue(method, index, args, parameterNames);
+			Object value = fetchValue(method, index, args, parameterNames);
 			values[i] = value;
 		}
 		return values;
@@ -119,12 +119,12 @@ public class ReflectionUtils {
 	 *            args中的index
 	 * @param args
 	 *            方法调用的实际参数
-	 * @param parameterName
+	 * @param paramName
 	 *            传入参数名称，这个在对象为Map时使用
 	 * @return 提取到的值
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Object fetchVlaue(Method getterMethod, Integer index, Object[] args, String paramName) {
+	private static Object fetchValue(Method getterMethod, Integer index, Object[] args, String paramName) {
 		if (index == null || index == -1) {
 			return null;
 		}
@@ -156,7 +156,7 @@ public class ReflectionUtils {
 			return arg;
 		} else {
 			try {
-				Object value = getterMethod.invoke(arg, new Object[0]);
+				Object value = getterMethod.invoke(arg);
 				if (value.getClass().isEnum()) {
 					return value.toString();
 				} else {
@@ -182,14 +182,14 @@ public class ReflectionUtils {
 	 *            传入参数名称，这个在对象为Map时使用
 	 * @return 提取到的值
 	 */
-	public static Object fetchVlaue(Method getterMethod, Integer index, Object[] args, List<String> parameterNames) {
+	public static Object fetchValue(Method getterMethod, Integer index, Object[] args, List<String> parameterNames) {
 		if (index == null || index == -1) {
 			return null;
 		}
 
 		String paramName = parameterNames.get(index);
 
-		return fetchVlaue(getterMethod, index, args, paramName);
+		return fetchValue(getterMethod, index, args, paramName);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class ReflectionUtils {
 			if (pos != -1) {
 				String actualName = paramName.substring(0, pos);
 
-				int index = getParameIndex(paramIndexes, actualName);
+				int index = getParamIndex(paramIndexes, actualName);
 				parameterIndexes[i] = index;
 
 				String prop = paramName.substring(pos + 1);
@@ -232,7 +232,7 @@ public class ReflectionUtils {
 				getters[i] = getter;
 			} else { // don't need getters
 				getters[i] = null;
-				Integer index = getParameIndex(paramIndexes, paramName);
+				Integer index = getParamIndex(paramIndexes, paramName);
 				parameterIndexes[i] = index;
 			}
 		}
@@ -249,7 +249,7 @@ public class ReflectionUtils {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static Method findGetterByPropertyName(Class<?> clazz, String prop) throws DaoGenerateException {
+	private static Method findGetterByPropertyName(Class<?> clazz, String prop) throws DaoGenerateException {
 		if (ClassHelper.isTypeMap(clazz)) {
 			return null;
 		}
@@ -292,8 +292,9 @@ public class ReflectionUtils {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static Object[] getGettersAndIndexes(Method method, List<String> parameterNames, Map<String, Integer> paramIndexes,
-			Map<String, Integer> batchParamIndexes, Class<?>[] paramTypes) throws DaoGenerateException {
+	public static Object[] getGettersAndIndexes(Method method, List<String> parameterNames,
+			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexes, Class<?>[] paramTypes)
+			throws DaoGenerateException {
 		int length = parameterNames.size();
 		Method[] getters = new Method[length];
 		Integer[] parameterIndexes = new Integer[length];
@@ -303,8 +304,8 @@ public class ReflectionUtils {
 			if (pos != -1) {
 				String actualName = paramName.substring(0, pos);
 
-				Class<?> componentType = null;
-				Integer index = null;
+				Class<?> componentType;
+				Integer index;
 
 				if (!paramIndexes.containsKey(actualName) && !batchParamIndexes.containsKey(actualName)) {
 					throw new DaoGenerateException("方法参数中必须包含@Param(\"" + actualName + "\")注解或者@BatchParam(\""
@@ -319,15 +320,16 @@ public class ReflectionUtils {
 					if (!paramType.isArray() && !ClassHelper.isTypeList(paramType)) {
 						throw new DaoGenerateException("@BatchParam(\"" + paramName + "\")只能用于数组类型或者List实现类的参数上");
 					}
-					if(paramType.isArray()) {
+					if (paramType.isArray()) {
 						componentType = paramTypes[index].getComponentType();
 					} else {
 						componentType = ClassHelper.getParameterGenericType(method, index);
-						if(componentType == null) {
-							throw new DaoGenerateException("@BatchParam(\"" + paramName + "\")只能用于泛型类型清晰的Collection实现类上");
+						if (componentType == null) {
+							throw new DaoGenerateException("@BatchParam(\"" + paramName
+									+ "\")只能用于泛型类型清晰的Collection实现类上");
 						}
 					}
-					
+
 				}
 
 				parameterIndexes[i] = index;
@@ -360,7 +362,7 @@ public class ReflectionUtils {
 	 * @param index
 	 * @return
 	 */
-	public static Object fetchArrayValue(Object arrayOrList, int index) {
+	private static Object fetchArrayValue(Object arrayOrList, int index) {
 		if (arrayOrList == null) {
 			return null;
 		}
@@ -368,13 +370,12 @@ public class ReflectionUtils {
 		Class<?> clazz = arrayOrList.getClass();
 		boolean isArray = ClassHelper.isTypeArray(clazz);
 		boolean isList = ClassHelper.isTypeList(clazz);
-		
-		
+
 		if (!isArray && !isList) {
 			throw new IllegalArgumentException("arrayOrList参数必须为数组或者List的实现类");
 		}
-		
-		if(isArray) {
+
+		if (isArray) {
 			Class<?> componentType = clazz.getComponentType();
 			if (!componentType.isPrimitive()) {
 				return ((Object[]) arrayOrList)[index];
@@ -384,7 +385,7 @@ public class ReflectionUtils {
 		} else {
 			return ((List<?>) arrayOrList).get(index);
 		}
-		
+
 	}
 
 	/**
@@ -394,7 +395,7 @@ public class ReflectionUtils {
 	 * @param index
 	 * @return
 	 */
-	static Object fetchPrimitiveArrayValue(Object array, int index, Class<?> componentType) {
+	private static Object fetchPrimitiveArrayValue(Object array, int index, Class<?> componentType) {
 		if (long.class.equals(componentType)) {
 			return ((long[]) array)[index];
 		}
@@ -431,7 +432,7 @@ public class ReflectionUtils {
 	 * @return
 	 * @throws DaoGenerateException
 	 */
-	public static Integer getParameIndex(Map<String, Integer> paramIndexes, String paramName)
+	private static Integer getParamIndex(Map<String, Integer> paramIndexes, String paramName)
 			throws DaoGenerateException {
 		if (!paramIndexes.containsKey(paramName)) {
 			throw new DaoGenerateException("方法参数中必须包含@Param(\"" + paramName + "\")注解或者参数名为\"" + paramName + "\"的参数");
@@ -474,7 +475,7 @@ public class ReflectionUtils {
 				cloneArgs[index] = fetchArrayValue(cloneArgs[index], i);
 			}
 
-			Object[] paramArray = fetchVlaues(getterMethods, parameterIndexes, cloneArgs, parameterNames);
+			Object[] paramArray = fetchValues(getterMethods, parameterIndexes, cloneArgs, parameterNames);
 			paramArrays.add(paramArray);
 		}
 

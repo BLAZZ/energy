@@ -15,7 +15,7 @@ import net.energy.utils.JdbcUtils;
  * 
  * @author wuqh
  * 
- * @param <T>
+ *
  */
 class BatchUpdateCallback implements PreparedStatementCallback<int[]> {
 	private final KeyHolder generatedKeyHolder;

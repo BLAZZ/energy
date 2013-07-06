@@ -14,7 +14,7 @@ import java.util.WeakHashMap;
  * @author wuqh
  *
  */
-public class IntrospectorUtils {
+class IntrospectorUtils {
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTOR_CACHE = new WeakHashMap<Class<?>, Map<String, PropertyDescriptor>>();
 
 	/**
@@ -38,19 +38,5 @@ public class IntrospectorUtils {
 		}
 
 		return propertyDescriptors;
-	}
-
-	/**
-	 * 获取指定类、指定参数的PropertyDescriptor
-	 * 
-	 * @param clazz
-	 * @param property
-	 * @return
-	 * @throws IntrospectionException
-	 */
-	public static PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String property)
-			throws IntrospectionException {
-		Map<String, PropertyDescriptor> propertyDescriptors = getPropertyDescriptors(clazz);
-		return (propertyDescriptors == null ? null : propertyDescriptors.get(property));
 	}
 }

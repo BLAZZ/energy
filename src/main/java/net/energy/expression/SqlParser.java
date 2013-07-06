@@ -46,8 +46,8 @@ public class SqlParser extends AbstractExpressionParser {
 
 		char[] statement = sql.toCharArray();
 		int namedParameterCount = 0;
-		int unnamedParameterCount = 0;
-		int totalParameterCount = 0;
+		// int unnamedParameterCount = 0;
+		// int totalParameterCount = 0;
 
 		int i = 0;
 		while (i < statement.length) {
@@ -68,23 +68,24 @@ public class SqlParser extends AbstractExpressionParser {
 					i = i + 2;
 					continue;
 				}
-				j = endIndexOfParameter(statement, i, j);
+				j = endIndexOfParameter(statement, j);
 				if (j - i > 1) {
 					String parameter = sql.substring(i + 1, j);
 					namedParameterCount = addNamedParameter(namedParameters, parameter, namedParameterCount);
 					parsedSql.addNamedParameter(parameter, i, j);
-					totalParameterCount++;
+					// totalParameterCount++;
 				}
 				i = j - 1;
-			} else if (c == '?') {
-				unnamedParameterCount++;
-				totalParameterCount++;
 			}
+			// else if (c == '?') {
+			// unnamedParameterCount++;
+			// totalParameterCount++;
+			// }
 			i++;
 		}
-		parsedSql.setNamedParameterCount(namedParameterCount);
-		parsedSql.setUnnamedParameterCount(unnamedParameterCount);
-		parsedSql.setTotalParameterCount(totalParameterCount);
+		// parsedSql.setNamedParameterCount(namedParameterCount);
+		// parsedSql.setUnnamedParameterCount(unnamedParameterCount);
+		// parsedSql.setTotalParameterCount(totalParameterCount);
 		return parsedSql;
 	}
 

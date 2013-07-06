@@ -5,12 +5,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import net.energy.annotation.mongo.MongoCollection;
-import net.energy.definition.AbstractDefintion;
+import net.energy.definition.AbstractDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
-import net.energy.expression.ParserFacotory;
-import net.energy.expression.ParserFacotory.ExpressionType;
+import net.energy.expression.ParserFactory;
+import net.energy.expression.ParserFactory.ExpressionType;
 import net.energy.utils.ClassHelper;
 import net.energy.utils.ExpressionUtils;
 
@@ -23,24 +23,24 @@ import org.apache.commons.lang.StringUtils;
  * @author wuqh
  * 
  */
-public abstract class BaseMongoDefinition extends AbstractDefintion {
+public abstract class BaseMongoDefinition extends AbstractDefinition {
 	/**
 	 * 需要绑定数据的Shell
 	 */
-	protected String shellWithToken;
+	private String shellWithToken;
 
 	/**
 	 * <code>@MongoCollection</code>参数放在args的位置
 	 * 
 	 */
-	protected int collectionIndex = -1;
+	private int collectionIndex = -1;
 
 	/**
 	 * <code>@MongoCollection</code>中value的值
 	 */
-	protected String globalCollectionName;
+	String globalCollectionName;
 
-	public BaseMongoDefinition(Method method) throws DaoGenerateException {
+	BaseMongoDefinition(Method method) throws DaoGenerateException {
 		super(method);
 	}
 
@@ -70,7 +70,7 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 	@Override
 	protected void checkBeforeParse(Method method) throws DaoGenerateException {
 	}
-	
+
 	@Override
 	protected void checkAfterParse(Method method) throws DaoGenerateException {
 		if (collectionIndex == -1 && StringUtils.isEmpty(globalCollectionName)) {
@@ -80,7 +80,7 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 
 	@Override
 	protected ParsedExpression parseExpression(Method method) {
-		ExpressionParser parser = ParserFacotory.createExpressionParser(ExpressionType.MONGO_SHELL);
+		ExpressionParser parser = ParserFactory.createExpressionParser(ExpressionType.MONGO_SHELL);
 
 		ParsedExpression parsedShell = parser.parse(getSourceShell(method));
 		shellWithToken = ExpressionUtils.getSql(parsedShell);
@@ -100,10 +100,10 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 	 * 检查加了修改更新类注解的方法的返回值类型:必须返回void或者boolean，如果不是将抛出DaoGenerateException
 	 * 
 	 * @param method
-	 * @param expcetionToThrow
+	 * @param annotationName
 	 * @throws DaoGenerateException
 	 */
-	protected void checkUpsetReturnType(Method method, String annotationName) throws DaoGenerateException {
+	void checkUpsetReturnType(Method method, String annotationName) throws DaoGenerateException {
 		Class<?> returnType = method.getReturnType();
 
 		if (net.energy.utils.ClassHelper.isTypePrimitive(returnType)) {
@@ -113,8 +113,8 @@ public abstract class BaseMongoDefinition extends AbstractDefintion {
 			return;
 		}
 
-		throw new DaoGenerateException("方法[" + method + "]配置错误：返回值非void,boolean,java.lang.Boolean类型，不能@" + annotationName
-				+ "注解");
+		throw new DaoGenerateException("方法[" + method + "]配置错误：返回值非void,boolean,java.lang.Boolean类型，不能@"
+				+ annotationName + "注解");
 
 	}
 

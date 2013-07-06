@@ -61,7 +61,7 @@ public class JdbcUtils {
 	 */
 	public static PreparedStatement createPreparedStatement(final Connection con, final String sql,
 			final boolean returnKeys, final Object... args) throws SQLException {
-		PreparedStatement ps = null;
+		PreparedStatement ps;
 		if (returnKeys) {
 			ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		} else {
@@ -88,8 +88,8 @@ public class JdbcUtils {
 	 */
 	public static void setParameterValue(PreparedStatement ps, int paramIndex, Object inValue) throws SQLException {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("绑定PreparedStatement参数: 参数列序号[" + paramIndex + "], 参数值["
-					+ inValue + "],参数类型[" + (inValue != null ? inValue.getClass().getName() : "null") + "]");
+			LOGGER.debug("绑定PreparedStatement参数: 参数列序号[" + paramIndex + "], 参数值[" + inValue + "],参数类型["
+					+ (inValue != null ? inValue.getClass().getName() : "null") + "]");
 		}
 
 		if (inValue == null) {
@@ -104,16 +104,15 @@ public class JdbcUtils {
 	 * 
 	 * @param ps
 	 * @param paramIndex
-	 * @param inValue
 	 * @throws SQLException
 	 */
 	private static void setNull(PreparedStatement ps, int paramIndex) throws SQLException {
 		boolean useSetObject = false;
 		int sqlType = Types.NULL;
 		try {
-			DatabaseMetaData dbmd = ps.getConnection().getMetaData();
-			String databaseProductName = dbmd.getDatabaseProductName();
-			String jdbcDriverName = dbmd.getDriverName();
+			DatabaseMetaData metaData = ps.getConnection().getMetaData();
+			String databaseProductName = metaData.getDatabaseProductName();
+			String jdbcDriverName = metaData.getDriverName();
 			if (databaseProductName.startsWith("Informix") || jdbcDriverName.startsWith("Microsoft SQL Server")) {
 				useSetObject = true;
 			} else if (databaseProductName.startsWith("DB2") || jdbcDriverName.startsWith("jConnect")
@@ -157,7 +156,7 @@ public class JdbcUtils {
 	 * 
 	 * @param con
 	 */
-	public static void closeConnection(Connection con) {
+	private static void closeConnection(Connection con) {
 		if (con != null) {
 			try {
 				if (!con.isClosed()) { // 关闭没有关闭
@@ -220,9 +219,9 @@ public class JdbcUtils {
 	 */
 	public static boolean supportsBatchUpdates(Connection con) {
 		try {
-			DatabaseMetaData dbmd = con.getMetaData();
-			if (dbmd != null) {
-				if (dbmd.supportsBatchUpdates()) {
+			DatabaseMetaData metaData = con.getMetaData();
+			if (metaData != null) {
+				if (metaData.supportsBatchUpdates()) {
 					LOGGER.debug("JDBC驱动支持批量更新");
 					return true;
 				} else {

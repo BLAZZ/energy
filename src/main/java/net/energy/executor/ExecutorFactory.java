@@ -50,7 +50,7 @@ public final class ExecutorFactory {
 	 */
 	public static DataAccessExecutor createJdbcExecutor(CacheManager cacheManager, JdbcDataAccessor dataAccessor,
 			Method method) throws DaoGenerateException {
-		DataAccessExecutor executor = null;
+		DataAccessExecutor executor;
 
 		CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
 		AbstractJdbcExecutor jdbcExecutor = createJdbcExecutor(dataAccessor, method);
@@ -78,7 +78,7 @@ public final class ExecutorFactory {
 	 */
 	public static DataAccessExecutor createMongoExecutor(CacheManager cacheManager, MongoDataAccessor dataAccessor,
 			Method method) throws DaoGenerateException {
-		DataAccessExecutor executor = null;
+		DataAccessExecutor executor;
 		CacheExecutor cacheExecutor = createCacheExecutor(cacheManager, method);
 		AbstractMongoExecutor mongoExecutor = createMongoExecutor(dataAccessor, method);
 

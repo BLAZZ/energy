@@ -40,7 +40,7 @@ public class MongoUpdateExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 
@@ -52,8 +52,8 @@ public class MongoUpdateExecutor extends AbstractMongoExecutor {
 		Integer[] modifierParameterIndexes = definition.getModifierParameterIndexes();
 		String modifier = definition.getModifierShellWithToken();
 		List<String> modifierParameterNames = definition.getParsedModifierShell().getParameterNames();
-		Object[] modifierParamArray = ReflectionUtils.fetchVlaues(modifierGetterMethods, modifierParameterIndexes, args,
-				modifierParameterNames);
+		Object[] modifierParamArray = ReflectionUtils.fetchValues(modifierGetterMethods, modifierParameterIndexes,
+				args, modifierParameterNames);
 
 		LOGGER.info("Mongo更新,查询部分Shell(带Token)[" + actualShell + "]");
 		LOGGER.info("Mongo更新,更新部分Shell(带Token)[" + modifier + "]");

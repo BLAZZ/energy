@@ -25,13 +25,13 @@ import org.slf4j.LoggerFactory;
  * @author wuqh
  * 
  */
-public abstract class AbstractDefintion {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDefintion.class);
+public abstract class AbstractDefinition {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDefinition.class);
 
 	/**
 	 * 系统保留关键字，用于指代方法执行的结果（用于单个对象缓存时生成versionKey）
 	 */
-	protected static String RESULT_PARAM_VALUE = "result";
+	protected static final String RESULT_PARAM_VALUE = "result";
 
 	/**
 	 * parsedSql的parameterNames中每个name对应对象在方法args[]数组中的索引值。
@@ -50,7 +50,7 @@ public abstract class AbstractDefintion {
 	 * </pre>
 	 * 
 	 */
-	protected Integer[] parameterIndexes;
+	private Integer[] parameterIndexes;
 
 	/**
 	 * 通用表名在参数的位置信息。
@@ -78,33 +78,32 @@ public abstract class AbstractDefintion {
 	 * </pre>
 	 * 
 	 */
-	protected Integer[] batchParamIndexes;
+	private Integer[] batchParamIndexes;
 
 	/**
 	 * 分页对象所处参数序号
 	 * 
 	 */
-	protected int pageIndex = -1;
+	private int pageIndex = -1;
 
 	/**
 	 * 用于执行的解析后的表达式
 	 */
-	protected ParsedExpression parsedExpression;
+	private ParsedExpression parsedExpression;
 
 	/**
 	 * 用于获取数据的getter方法
 	 * 
 	 */
-	protected Method[] getterMethods;
-	
-	
-	public AbstractDefintion(Method method) throws DaoGenerateException {
-		//如果不传入method，则表示子类会自己根据需要，延迟初始化
-		if(method != null) {
+	private Method[] getterMethods;
+
+	protected AbstractDefinition(Method method) throws DaoGenerateException {
+		// 如果不传入method，则表示子类会自己根据需要，延迟初始化
+		if (method != null) {
 			initDefinition(method);
 		}
 	}
-	
+
 	/**
 	 * 初始化DAO方法定义
 	 * 
@@ -131,7 +130,7 @@ public abstract class AbstractDefintion {
 		parseInternal(method, paramIndexes, batchParamIndexes);
 
 		checkAfterParse(method);
-		
+
 		logBindInfo(method);
 	}
 
@@ -156,42 +155,14 @@ public abstract class AbstractDefintion {
 	private void parseParameterAnnotations(Method method, Annotation[][] annotations,
 			Map<String, Integer> paramIndexes, Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes)
 			throws DaoGenerateException {
-		
+
 		for (int index = 0; index < annotations.length; index++) {
 
 			for (Annotation annotation : annotations[index]) {
-				
-				Class<? extends Annotation> annotationType = annotation.annotationType();
-				if (Param.class.equals(annotationType)) {
-					Param param = (Param) annotation;
-					String value = param.value();
 
-					if (RESULT_PARAM_VALUE.equals(value)) {
-						throw new DaoGenerateException("方法[" + method + "]配置错误：不能使用@Param(\"" + RESULT_PARAM_VALUE + "\")注解作为参数：\""
-								+ RESULT_PARAM_VALUE + "\"为系统保留关键字");
-					}
-
-					addParam(value, index, paramIndexes);
-				}
-				if (BatchParam.class.equals(annotationType) && batchParamIndexMap != null) {
-					BatchParam param = (BatchParam) annotation;
-					String value = param.value();
-
-					if (!ClassHelper.isTypeArray(paramTypes[index]) && !ClassHelper.isTypeList(paramTypes[index])) {
-						throw new DaoGenerateException("方法[" + method + "]配置错误：@BatchParam只能配置在数组或者List实现类上");
-					}
-
-					addBatchParam(value, index, batchParamIndexMap);
-
-				}
-				if (GenericTable.class.equals(annotationType)) {
-					GenericTable genericTable = (GenericTable) annotation;
-					int order = genericTable.index();
-
-					addGenericTable(index, order);
-				}
+				detectAnnotation(method, index, annotation, paramIndexes, batchParamIndexMap, paramTypes);
 			}
-			
+
 			Class<?> type = paramTypes[index];
 
 			if (ClassHelper.isTypePage(type) && pageIndex == -1) {
@@ -200,7 +171,40 @@ public abstract class AbstractDefintion {
 				LOGGER.info("方法中已经存在Page类型对象，系统自动忽略");
 			}
 		}
-		
+
+	}
+
+	private void detectAnnotation(Method method, int index, Annotation annotation, Map<String, Integer> paramIndexes,
+			Map<String, Integer> batchParamIndexMap, Class<?>[] paramTypes) throws DaoGenerateException {
+		Class<? extends Annotation> annotationType = annotation.annotationType();
+		if (Param.class.equals(annotationType)) {
+			Param param = (Param) annotation;
+			String value = param.value();
+
+			if (RESULT_PARAM_VALUE.equals(value)) {
+				throw new DaoGenerateException("方法[" + method + "]配置错误：不能使用@Param(\"" + RESULT_PARAM_VALUE
+						+ "\")注解作为参数：\"" + RESULT_PARAM_VALUE + "\"为系统保留关键字");
+			}
+
+			addParam(value, index, paramIndexes);
+		}
+		if (BatchParam.class.equals(annotationType) && batchParamIndexMap != null) {
+			BatchParam param = (BatchParam) annotation;
+			String value = param.value();
+
+			if (!ClassHelper.isTypeArray(paramTypes[index]) && !ClassHelper.isTypeList(paramTypes[index])) {
+				throw new DaoGenerateException("方法[" + method + "]配置错误：@BatchParam只能配置在数组或者List实现类上");
+			}
+
+			addBatchParam(value, index, batchParamIndexMap);
+
+		}
+		if (GenericTable.class.equals(annotationType)) {
+			GenericTable genericTable = (GenericTable) annotation;
+			int order = genericTable.index();
+
+			addGenericTable(index, order);
+		}
 	}
 
 	/**
@@ -210,7 +214,7 @@ public abstract class AbstractDefintion {
 	 * @param index
 	 * @param batchParamIndexMap
 	 */
-	protected void addBatchParam(String paramName, Integer index, Map<String, Integer> batchParamIndexMap) {
+	private void addBatchParam(String paramName, Integer index, Map<String, Integer> batchParamIndexMap) {
 		if (batchParamIndexMap == null) {
 			return;
 		}
@@ -230,7 +234,7 @@ public abstract class AbstractDefintion {
 	 * @param index
 	 * @param paramIndexes
 	 */
-	protected void addParam(String paramName, Integer index, Map<String, Integer> paramIndexes) {
+	private void addParam(String paramName, Integer index, Map<String, Integer> paramIndexes) {
 		if (paramIndexes == null) {
 			return;
 		}
@@ -248,7 +252,7 @@ public abstract class AbstractDefintion {
 	 * @param index
 	 * @param order
 	 */
-	protected void addGenericTable(Integer index, int order) {
+	private void addGenericTable(Integer index, int order) {
 		genericIndexes = net.energy.utils.ArrayHelper.addElemToArray(genericIndexes, index, order);
 	}
 
@@ -268,7 +272,8 @@ public abstract class AbstractDefintion {
 		if (batchParamIndexes == null || batchParamIndexes.isEmpty()) {
 			return ReflectionUtils.getGettersAndIndexes(parameterNames, paramIndexes, paramTypes);
 		} else {
-			return ReflectionUtils.getGettersAndIndexes(method, parameterNames, paramIndexes, batchParamIndexes, paramTypes);
+			return ReflectionUtils.getGettersAndIndexes(method, parameterNames, paramIndexes, batchParamIndexes,
+					paramTypes);
 		}
 	}
 
@@ -306,7 +311,7 @@ public abstract class AbstractDefintion {
 	 * @throws DaoGenerateException
 	 */
 	protected abstract void checkAfterParse(Method method) throws DaoGenerateException;
-	
+
 	/**
 	 * 记录解析后的Annotation和方法的绑定信息
 	 * 
@@ -318,18 +323,6 @@ public abstract class AbstractDefintion {
 		return parameterIndexes;
 	}
 
-	public Integer[] getGenericIndexes() {
-		return genericIndexes;
-	}
-
-	public Integer[] getBatchParamIndexes() {
-		return batchParamIndexes;
-	}
-
-	public int getPageIndex() {
-		return pageIndex;
-	}
-
 	public ParsedExpression getParsedExpression() {
 		return parsedExpression;
 	}
@@ -338,11 +331,14 @@ public abstract class AbstractDefintion {
 		return getterMethods;
 	}
 
+	public Integer[] getBatchParamIndexes() {
+		return batchParamIndexes;
+	}
+
 	/**
 	 * 获取参数中的分页对象
 	 * 
 	 * @param args
-	 * @param pageIndex
 	 * @return
 	 */
 	public Page getPageArgument(Object[] args) {

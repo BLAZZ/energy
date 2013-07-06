@@ -52,8 +52,7 @@ public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
 	 * @param args
 	 * @return
 	 */
-	protected <T> T execute(String sql, int fetchSize, boolean returnKeys, PreparedStatementCallback<T> action,
-			Object... args) {
+	<T> T execute(String sql, int fetchSize, boolean returnKeys, PreparedStatementCallback<T> action, Object... args) {
 		// 创建Connection
 		Connection con = JdbcUtils.getConnection(dataSource);
 		PreparedStatement ps = null;
@@ -99,8 +98,7 @@ public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
 		return execute(sql, 0, returnKeys, buc);
 	}
 
-	@Override
-	public int queryCount(String sql, Object... args) {
+	private int queryCount(String sql, Object... args) {
 		String countSql = dialect.getCountSql(sql);
 
 		LOGGER.info("用于Count操作的SQL:" + countSql);
@@ -136,7 +134,7 @@ public class SimpleJdbcDataAccessor implements JdbcDataAccessor {
 	 * @param results
 	 * @return
 	 */
-	public static <T> T getSingleResult(Collection<T> results) {
+	private <T> T getSingleResult(Collection<T> results) {
 		int size = (results != null ? results.size() : 0);
 		if (size == 0) {
 			return null;

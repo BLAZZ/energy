@@ -16,8 +16,8 @@ import net.sf.cglib.proxy.Enhancer;
  * 
  */
 public abstract class AbstractDaoFactory implements DaoFactory {
-	private final int proxyCacheSize = 32;
-	private Map<Class<?>, Object> proxyCache = new ConcurrentHashMap<Class<?>, Object>(proxyCacheSize);
+	private final static int PROXY_CACHE_SIZE = 32;
+	private final Map<Class<?>, Object> proxyCache = new ConcurrentHashMap<Class<?>, Object>(PROXY_CACHE_SIZE);
 
 	@SuppressWarnings("unchecked")
 	public <T> T createDao(Class<T> clazz) throws Exception {
@@ -36,7 +36,7 @@ public abstract class AbstractDaoFactory implements DaoFactory {
 	 * 
 	 * @return
 	 */
-	protected DataAccessInterceptor newDataAccessInterceptor() {
+	DataAccessInterceptor newDataAccessInterceptor() {
 		return new DataAccessInterceptor();
 	}
 
@@ -57,7 +57,7 @@ public abstract class AbstractDaoFactory implements DaoFactory {
 	 * @param interceptor
 	 * @throws Exception 
 	 */
-	protected void detectDataAccessMethod(Class<?> clazz, final DataAccessInterceptor interceptor) throws Exception {
+	void detectDataAccessMethod(Class<?> clazz, final DataAccessInterceptor interceptor) throws Exception {
 		ReflectionUtils.doWithMethods(clazz, new ReflectionUtils.MethodCallback() {
 
 			@Override

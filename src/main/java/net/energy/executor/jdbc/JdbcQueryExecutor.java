@@ -36,7 +36,7 @@ public class JdbcQueryExecutor extends AbstractJdbcExecutor {
 		// 获取实际用于执行的preparedSQL
 		String actualSql = definition.getActualSql(args);
 		List<String> parameterNames = definition.getParsedSql().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
 		// 判断是否为分页查询，如果是分页查询就按分页查询的方式处理
 		Page page = definition.getPageArgument(args);
 		if (page != null) {

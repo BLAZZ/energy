@@ -16,11 +16,11 @@ public class CacheDeleteDefinition extends BaseCacheDefinition {
 	/**
 	 * 缓存的pool
 	 */
-	private String pool;
+	private final String pool;
 	/**
 	 * 原始的key值
 	 */
-	private String key;
+	private final String key;
 
 	public CacheDeleteDefinition(CacheDelete cacheDelete, Method method) throws DaoGenerateException {
 		//CacheDelete信息获取必须放在initDefinition之前，以免调用getSourceKey时无法获取key值
@@ -31,7 +31,7 @@ public class CacheDeleteDefinition extends BaseCacheDefinition {
 	}
 
 	@Override
-	protected String getSourceKey(Method method) {
+	protected String getSourceKey() {
 		return key;
 	}
 	
@@ -42,11 +42,6 @@ public class CacheDeleteDefinition extends BaseCacheDefinition {
 	public String getKey() {
 		return key;
 	}
-
-	public void setPool(String pool) {
-		this.pool = pool;
-	}
-
 
 	@Override
 	public ParsedExpression getParsedKey() {

@@ -18,7 +18,7 @@ import com.mongodb.DBObject;
  * 
  */
 public class QueuedMongoDataAccessor extends SimpleMongoDataAccessor implements MongoDataAccessor {
-	private SimpleMongoDataAccessor dataAccessor = new SimpleMongoDataAccessor();
+	private final SimpleMongoDataAccessor dataAccessor = new SimpleMongoDataAccessor();
 	
 	private long timeout = 0L;
 

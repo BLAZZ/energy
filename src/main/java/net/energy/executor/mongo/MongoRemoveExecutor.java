@@ -39,12 +39,12 @@ public class MongoRemoveExecutor extends AbstractMongoExecutor {
 
 		String actualShell = definition.getShellWithToken();
 		List<String> parameterNames = definition.getParsedShell().getParameterNames();
-		Object[] paramArray = ReflectionUtils.fetchVlaues(getterMethods, parameterIndexes, args, parameterNames);
+		Object[] paramArray = ReflectionUtils.fetchValues(getterMethods, parameterIndexes, args, parameterNames);
 
 		String collectionName = definition.getCollectionName(args);
 
 		LOGGER.info("Mongo删除操作Shell(带Token)[" + actualShell + "]");
-		
+
 		// 构造删除操作的数据结构
 		MongoShell shell = new MongoShell(actualShell, paramArray);
 		boolean result = dataAccessor.remove(collectionName, shell);

@@ -3,12 +3,12 @@ package net.energy.definition.jdbc;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import net.energy.definition.AbstractDefintion;
+import net.energy.definition.AbstractDefinition;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
-import net.energy.expression.ParserFacotory;
-import net.energy.expression.ParserFacotory.ExpressionType;
+import net.energy.expression.ParserFactory;
+import net.energy.expression.ParserFactory.ExpressionType;
 import net.energy.utils.ArrayHelper;
 import net.energy.utils.ExpressionUtils;
 import net.energy.utils.SqlFormatter;
@@ -20,9 +20,9 @@ import net.energy.utils.SqlFormatter;
  * @author wuqh
  * 
  */
-public abstract class BaseJdbcDefinition extends AbstractDefintion {
+public abstract class BaseJdbcDefinition extends AbstractDefinition {
 
-	public BaseJdbcDefinition(Method method) throws DaoGenerateException {
+	BaseJdbcDefinition(Method method) throws DaoGenerateException {
 		super(method);
 	}
 
@@ -30,10 +30,6 @@ public abstract class BaseJdbcDefinition extends AbstractDefintion {
 	 * 需要创建PreparedStatement的SQL
 	 */
 	private String preparedSql;
-
-	public String getPreparedSql() {
-		return preparedSql;
-	}
 
 	/**
 	 * 获取解析后的SQL表达式
@@ -46,7 +42,7 @@ public abstract class BaseJdbcDefinition extends AbstractDefintion {
 
 	@Override
 	protected ParsedExpression parseExpression(Method method) {
-		ExpressionParser parser = ParserFacotory.createExpressionParser(ExpressionType.SQL);
+		ExpressionParser parser = ParserFactory.createExpressionParser(ExpressionType.SQL);
 
 		ParsedExpression parsedSql = parser.parse(getSourceSql(method));
 		preparedSql = ExpressionUtils.getSql(parsedSql);
@@ -65,7 +61,7 @@ public abstract class BaseJdbcDefinition extends AbstractDefintion {
 	@Override
 	protected void checkBeforeParse(Method method) throws DaoGenerateException {
 	}
-	
+
 	@Override
 	protected void parseInternal(Method method, Map<String, Integer> paramIndexes,
 			Map<String, Integer> batchParamIndexes) throws DaoGenerateException {
@@ -74,7 +70,7 @@ public abstract class BaseJdbcDefinition extends AbstractDefintion {
 	@Override
 	protected void checkAfterParse(Method method) throws DaoGenerateException {
 	}
-	
+
 	/**
 	 * 替换SQL中的通用表名，获取实际用于执行的PreparedSQL
 	 * 

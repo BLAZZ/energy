@@ -8,8 +8,8 @@ import net.energy.annotation.mongo.MongoUpdate;
 import net.energy.exception.DaoGenerateException;
 import net.energy.expression.ExpressionParser;
 import net.energy.expression.ParsedExpression;
-import net.energy.expression.ParserFacotory;
-import net.energy.expression.ParserFacotory.ExpressionType;
+import net.energy.expression.ParserFactory;
+import net.energy.expression.ParserFactory.ExpressionType;
 import net.energy.utils.ExpressionUtils;
 import net.energy.utils.ReflectionUtils;
 
@@ -71,10 +71,10 @@ public class MongoUpdateDefinition extends BaseMongoDefinition {
 	 */
 	private void parseModifierShell(String modifierShell, Class<?>[] paramTypes, Map<String, Integer> paramIndexes)
 			throws DaoGenerateException {
-		ExpressionParser parser = ParserFacotory.createExpressionParser(ExpressionType.MONGO_SHELL);
+		ExpressionParser parser = ParserFactory.createExpressionParser(ExpressionType.MONGO_SHELL);
 		parsedModifierShell = parser.parse(modifierShell);
 		List<String> parameterNames = parsedModifierShell.getParameterNames();
-		Object[] gettersAndIndexes = null;
+		Object[] gettersAndIndexes;
 		gettersAndIndexes = ReflectionUtils.getGettersAndIndexes(parameterNames, paramIndexes, paramTypes);
 		Method[] getterMethods = (Method[]) gettersAndIndexes[0];
 		Integer[] parameterIndexes = (Integer[]) gettersAndIndexes[1];
